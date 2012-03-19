@@ -7,4 +7,5 @@ tmp
 .project
 .classpath
 .settings
+.DS_Store
 dist
