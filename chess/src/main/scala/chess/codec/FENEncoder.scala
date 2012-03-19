@@ -12,10 +12,9 @@ import chess.PieceColor._
 import chess.BoardSide._
 
 /**
- * Encodes positions in Forsyth–Edwards Notation.
+ * Encodes positions in Forsyth Edwards Notation.
  *
  * @param position is the position to encode.
- * @see http://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
  */
 class FENEncoder(val position: Position) {
   
