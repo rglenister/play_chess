@@ -13,6 +13,9 @@ object ApplicationBuild extends Build {
 
     val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
       // Add your own project settings here      
-    )
+    ) dependsOn chess
 
+    lazy val chess = Project(id = "chess", base = file("chess"))
+    
+    main.aggregate(chess)
 }
