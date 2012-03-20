@@ -117,7 +117,16 @@ DHTMLGoodies.ChessFen.prototype = {
 		
 		var board = document.createElement('DIV');		
 		board.className = 'ChessBoardInner' + this.squareSize;
-			
+		board.id = 'chessBoardInnerID';
+		var that = this;
+		board.ondrop = function (event) {
+		    console.log(event.dataTransfer.getData('text/sourcesquare'))
+		    var offset = $("#chessBoardInnerID").offset();
+			var square = that.__getSquareIndexByBoardPos(event.clientX - offset.left, event.clientY - offset.top);
+			console.log('offset.left=' + offset.left + ' offset.top=' + offset.top + ' tosquare=' + square);
+		    return false;
+	    };
+		board.ondragover = function () { return false; };			
 		
 		if(this.boardLabels){
 			this.__addBoardLabels(boardOuter);
@@ -173,6 +182,7 @@ DHTMLGoodies.ChessFen.prototype = {
 		var pieces = items[0];
 		
 		var currentCol = 0;
+		var that = this
 		for(var no=0;no<pieces.length;no++){
 			var character = pieces.substr(no,1);
 			
@@ -190,7 +200,14 @@ DHTMLGoodies.ChessFen.prototype = {
 					var color = 'b';
 				}
 				var img = document.createElement('IMG');
-				img.src = this.imageFolder + this.pieceType + this.squareSize  + color + character.toLowerCase() + '.png';				
+				img.src = this.imageFolder + this.pieceType + this.squareSize  + color + character.toLowerCase() + '.png';
+				img.ondragstart = function(event) {
+					console.log(event)
+					var pieceDiv = event.currentTarget.parentElement;
+					var square = that.__getSquareIndexByBoardPos(pieceDiv.offsetLeft, pieceDiv.offsetTop);
+					console.log('source square=' + square)
+					event.dataTransfer.setData('text/sourcesquare', square)
+				}
 				self.status = this.imageFolder + this.pieceType + this.squareSize  + color + character.toLowerCase() + '.png';;
 				piece.appendChild(img);
 				piece.className = 'ChessPiece' + this.squareSize;
@@ -202,6 +219,14 @@ DHTMLGoodies.ChessFen.prototype = {
 		}
 		
 		
+	}
+	,
+	__getSquareIndexByBoardPos : function(x, y)
+	{
+		var row = 7 - Math.floor(y / this.squareSize);
+		var column = Math.floor(x / this.squareSize);
+		var square = row * 8 + column;		
+		return square;
 	}
 	,
 	/* Starting from the top */
