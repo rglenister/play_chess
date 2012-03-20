@@ -114,7 +114,10 @@ class Game(
   }
   
   /**
+   * Sets the player for the given color.
    * 
+   * @param color is the color of the player.
+   * @param player is the player.
    */
   def setPlayer(color: PieceColor.Value, player: Player): Game = {
     new Game(firstPosition, moveMap, nextMoveMapIndex, players + (color -> player))
