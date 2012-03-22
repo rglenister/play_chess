@@ -11,6 +11,16 @@ import chess.PieceType._
 import chess.PieceColor._
 import chess.BoardSide._
 
+
+/**
+ * Factory for FENEncoders.
+ */
+object FENEncoder {
+  private val rowsOfSquareIndexes = (56 to 0 by -8) map { n => List.range(n, n+8) }
+  
+  def apply(position: Position) = new FENEncoder(position)
+}
+
 /**
  * Encodes positions in Forsyth Edwards Notation.
  *
@@ -29,7 +39,7 @@ class FENEncoder(val position: Position) {
   }
   
   private def encodePiecePositions = {
-    (56 to 0 by -8) map { n => List.range(n, n+8) } map { formatRow } map { runlengthEncodeSpaces } map { _.mkString } mkString("/")
+    FENEncoder.rowsOfSquareIndexes map { formatRow } map { runlengthEncodeSpaces } map { _.mkString } mkString("/")
   }
   
   private def formatRow(squareIndexes: List[Int]): List[Char] = {
