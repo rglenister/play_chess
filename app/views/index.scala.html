@@ -9,11 +9,16 @@
     <div id="chessBoard1"></div>  
     
     <script type="text/javascript">
+    var pieceMoved = function(fromSquare, toSquare) {
+        console.log('in callback - piece moved', fromSquare, toSquare)
+    }
       var props = {
     		  cssPath: '@routes.Assets.at("stylesheets/chess.css")',
-    		  imageFolder: '@routes.Assets.at("images/board_and_pieces/")'
+    		  imageFolder: '@routes.Assets.at("images/board_and_pieces/")',
+    		  pieceMovedCallback: pieceMoved 
       }
       var chessObj = new DHTMLGoodies.ChessFen(props);
       chessObj.loadFen('@fen','chessBoard1');
+      
     </script>  
 }

@@ -41,6 +41,7 @@ DHTMLGoodies.ChessFen = function(props)
 	var flipBoardWhenBlackToMove;
 	
 	var pieceType;
+	var pieceMovedCallback;
 	
 	this.pieceType = 'cases';
 	this.squareSize = 45;
@@ -67,6 +68,7 @@ DHTMLGoodies.ChessFen.prototype = {
 		if(props.boardLabels || props.boardLabels===false)this.boardLabels = props.boardLabels;	
 		if(props.flipBoardWhenBlackToMove || props.flipBoardWhenBlackToMove===false)this.flipBoardWhenBlackToMove = props.flipBoardWhenBlackToMove;	
 		if(props.pieceType)this.pieceType = props.pieceType;	
+		if(props.pieceMovedCallback)this.pieceMovedCallback = props.pieceMovedCallback;	
 	}
 	,
 	setSquareSize : function(squareSize)
@@ -120,10 +122,10 @@ DHTMLGoodies.ChessFen.prototype = {
 		board.id = 'chessBoardInnerID';
 		var that = this;
 		board.ondrop = function (event) {
-		    console.log(event.dataTransfer.getData('text/sourcesquare'))
+			var fromSquare = event.dataTransfer.getData('text/plain')
 		    var offset = $("#chessBoardInnerID").offset();
-			var square = that.__getSquareIndexByBoardPos(event.clientX - offset.left, event.clientY - offset.top);
-			console.log('offset.left=' + offset.left + ' offset.top=' + offset.top + ' tosquare=' + square);
+			var toSquare = that.__getSquareIndexByBoardPos(event.clientX - offset.left, event.clientY - offset.top);
+			that.pieceMovedCallback(fromSquare, toSquare)
 		    return false;
 	    };
 		board.ondragover = function () { return false; };			
@@ -202,13 +204,11 @@ DHTMLGoodies.ChessFen.prototype = {
 				var img = document.createElement('IMG');
 				img.src = this.imageFolder + this.pieceType + this.squareSize  + color + character.toLowerCase() + '.png';
 				img.ondragstart = function(event) {
-					console.log(event)
 					var pieceDiv = event.currentTarget.parentElement;
-					var square = that.__getSquareIndexByBoardPos(pieceDiv.offsetLeft, pieceDiv.offsetTop);
-					console.log('source square=' + square)
-					event.dataTransfer.setData('text/sourcesquare', square)
+					var fromSquare = that.__getSquareIndexByBoardPos(pieceDiv.offsetLeft, pieceDiv.offsetTop);
+					event.dataTransfer.setData('text/plain', fromSquare)
 				}
-				self.status = this.imageFolder + this.pieceType + this.squareSize  + color + character.toLowerCase() + '.png';;
+				self.status = this.imageFolder + this.pieceType + this.squareSize  + color + character.toLowerCase() + '.png';
 				piece.appendChild(img);
 				piece.className = 'ChessPiece' + this.squareSize;
 				boardEl.appendChild(piece);
