@@ -26,8 +26,7 @@ object StaticMoveGenerator {
    */
   def onBoard(squareFrom: Int, squareTo: Int) = squareTo >= 0 && squareTo < Board.NumSquares && math.abs(squareTo % 8 - squareFrom % 8) < 3
 
-  private val whitePawnIncrements = List(8)
-  private val blackPawnIncrements = List(-8)
+  private val pawnIncrements = Map(White -> List(8), Black -> List(-8))
   private val knightIncrements = List(10, 17, 15, 6, -10, -17, -15, -6)
   private val bishopIncrements = List(9, 7, -9, -7)
   private val rookIncrements = List(1, 8, -1, -8)
@@ -44,10 +43,8 @@ object StaticMoveGenerator {
     val moveGenerator = StaticMoveGenerator(fromSquare) _
     piece match {
       case Piece(Pawn, side) if (Board.rank(fromSquare, side) == 0) => moveGenerator(Nil, 0)
-      case Piece(Pawn, White) if (Board.rank(fromSquare, White) == 1) => moveGenerator(whitePawnIncrements, 2)
-      case Piece(Pawn, Black) if (Board.rank(fromSquare, Black) == 1) => moveGenerator(blackPawnIncrements, 2)
-      case Piece(Pawn, White) => moveGenerator(whitePawnIncrements, 1)
-      case Piece(Pawn, Black) => moveGenerator(blackPawnIncrements, 1)
+      case Piece(Pawn, side) if (Board.rank(fromSquare, side) == 1) => moveGenerator(pawnIncrements(side), 2)
+      case Piece(Pawn, side) => moveGenerator(pawnIncrements(side), 1)
       case Piece(Knight, _) => moveGenerator(knightIncrements, 1)
       case Piece(Bishop, _) => moveGenerator(bishopIncrements, 7)
       case Piece(Rook, _) => moveGenerator(rookIncrements, 7)
