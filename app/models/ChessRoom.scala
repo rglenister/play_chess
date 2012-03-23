@@ -38,8 +38,8 @@ object ChessRoom {
       
         // Create an Iteratee to consume the feed
         val iteratee = Iteratee.foreach[JsValue] { event =>
-          val fromSquare = (event \ "fromSquare").toString.toInt
-          val toSquare = (event \ "toSquare").toString.toInt
+          val fromSquare = (event \ "fromSquare").as[Int]
+          val toSquare = (event \ "toSquare").as[Int]
           default ! MakeMove(username, fromSquare, toSquare)
         }.mapDone { _ =>
           default ! Quit(username)
