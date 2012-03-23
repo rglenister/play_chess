@@ -1,0 +1,79 @@
+@(username: String, fen: String)(implicit request: RequestHeader)
+
+@main(Some(username)) {
+    
+    <div class="page-header">
+        <h1>Welcome to the chess room <small>You are playing as @username</small></h1>
+    </div>
+    
+    <div id="onError" class="alert-message error">
+        <p>
+            <strong>Oops!</strong> <span></span>
+        </p>
+    </div>
+    
+    <div id="onChess" class="row">
+        <div class='span10' id="chessBoard1"></div>  
+        <div class="span4">
+            <h2>Members</h2>
+            <ul id="members">
+            </ul>
+        </div>
+    </div>
+      
+    <script type="text/javascript" charset="utf-8">
+        var console;
+        var pieceMoved = function (fromSquare, toSquare) {
+                "use strict";
+                console.log('pieceMoved -', 'fromSquare', fromSquare, 'toSquare', toSquare);
+                sendMessage(fromSquare, toSquare)
+            };
+        var props = {
+                cssPath: '@routes.Assets.at("stylesheets/chess.css")',
+                imageFolder: '@routes.Assets.at("images/board_and_pieces/")',
+                pieceMovedCallback: pieceMoved,
+                flipBoardWhenBlackToMove: false
+        };
+            
+        chessObj = new DHTMLGoodies.ChessFen(props);
+        chessObj.loadFen('@fen', 'chessBoard1');      
+    </script>
+            
+    <script type="text/javascript" charset="utf-8">
+        var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
+        var chessSocket = new WS("@routes.Application.chess(username).webSocketURL()")
+    
+        var sendMessage = function(fromSquare, toSquare) {
+            chessSocket.send(JSON.stringify(
+                {fromSquare: fromSquare, toSquare: toSquare}
+            ))
+        }
+
+         var receiveEvent = function(event) {
+             var data = JSON.parse(event.data)
+             
+             // Handle errors
+             if(data.error) {
+                 chessSocket.close()
+                 $("#onError span").text(data.error)
+                 $("#onError").show()
+                 return
+             } else {
+                 $("#onChat").show()
+             }
+             if(data.kind === 'fen') {
+                 console.log('fen -', data.message)
+                 chessObj.loadFen(data.message, 'chessBoard1')                	 
+             }
+             // Update the members list
+             $("#members").html('') 
+             $(data.members).each(function() {
+                 $("#members").append('<li>' + this + '</li>')
+             })
+         }
+                      
+         chessSocket.onmessage = receiveEvent
+    </script> 
+    
+    
+}

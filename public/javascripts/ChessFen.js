@@ -116,7 +116,7 @@ DHTMLGoodies.ChessFen.prototype = {
 		board.id = 'chessBoardInnerID';
 		var that = this;
 		board.ondrop = function (event) {
-			var fromSquare = event.dataTransfer.getData('text/plain');
+			var fromSquare = parseInt(event.dataTransfer.getData('text/plain'));
 			var offset = $("#chessBoardInnerID").offset();
 			var toSquare = that.__getSquareIndexByBoardPos(event.clientX - offset.left, event.clientY - offset.top);
 			that.pieceMovedCallback(fromSquare, toSquare);
