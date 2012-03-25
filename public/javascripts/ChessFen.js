@@ -39,11 +39,6 @@ DHTMLGoodies.ChessFen = function (props) {
 
 	this.pieceType = 'cases';
 	this.squareSize = 45;
-	this.isOldMSIE = (navigator.userAgent.toLowerCase().match(/msie\s[0-6]/gi)) ? true
-			: false;
-	this.isOpera = (navigator.userAgent.toLowerCase().indexOf('opera') >= 0) ? true
-			: false;
-
 	this.cssPath = 'css/chess.css';
 	this.parentRef = document.body;
 	this.imageFolder = 'images/';
@@ -179,39 +174,34 @@ DHTMLGoodies.ChessFen.prototype = {
 		var currentCol = 0;
 		var color = 'w';
 		var that = this;
+		var onDragStart = function (event) {
+			var pieceDiv = event.currentTarget.parentElement;
+			var fromSquare = that.__getSquareIndexByBoardPos(
+					pieceDiv.offsetLeft, pieceDiv.offsetTop);
+			event.dataTransfer.setData('text/plain', fromSquare);
+		};		
 		for (var no = 0; no < pieces.length; no++) {
 			var character = pieces.substr(no, 1);
 
-			if (character.match(/[A-Z]/i)) { /* White pieces */
+			if (character.match(/[A-Z]/i)) {
 				var boardPos = this.__getBoardPosByCol(currentCol);
 				var piece = document.createElement('DIV');
+				var span = document.createElement('p');
+				span.innerHTML = this.__getUnicodeForPiece(character);
+				span.draggable=true;
+				span.ondragstart = onDragStart;
+				span.className = 'Span45';
+
 				piece.style.position = 'absolute';
 				piece.style.left = boardPos.x + 'px';
 				piece.style.top = boardPos.y + 'px';
 
-				if (character.match(/[A-Z]/)) { /* White pieces */
-					color = 'w';
-				}
-				else if (character.match(/[a-z]/)) { /* Black pieces */
-					color = 'b';
-				}
-				var img = document.createElement('IMG');
-				img.src = this.imageFolder + this.pieceType + this.squareSize + color + character.toLowerCase() + '.png';
-				img.ondragstart = function (event) {
-					var pieceDiv = event.currentTarget.parentElement;
-					var fromSquare = that.__getSquareIndexByBoardPos(
-							pieceDiv.offsetLeft, pieceDiv.offsetTop);
-					event.dataTransfer.setData('text/plain', fromSquare);
-				};
-				piece.appendChild(img);
 				piece.className = 'ChessPiece' + this.squareSize;
+				piece.appendChild(span);
 				boardEl.appendChild(piece);
 				currentCol++;
-				if (this.isOldMSIE && !this.isOpera) {
-					this.correctPng(img);
-				}
 			}
-			if (character.match(/[0-8]/)) {
+			else if (character.match(/[0-8]/)) {
 				currentCol += character / 1;
 			}
 		}
@@ -268,17 +258,14 @@ DHTMLGoodies.ChessFen.prototype = {
 		}
 		return elRef; // Return original ref.
 	},
-	correctPng : function (el) {
-		el = this.__getEl(el);
-		var img = el;
-		var width = img.width;
-		var height = img.height;
-		var html = '<span style="position:absolute;display:inline-block;filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=\'' +
-				img.src +
-				'\',sizingMethod=\'scale\');width:' +
-				width +
-				';height:' + height + '"></span>';
-		img.outerHTML = html;
-
-	}
+	__getUnicodeForPiece : (function () {
+		var lookup = {
+				P: '\u2659', N: '\u2658', B: '\u2657', R: '\u2656',	Q: '\u2655', K: '\u2654',
+				p: '\u265F', n: '\u265E', b: '\u265D', r: '\u265C', q: '\u265B', k: '\u265A'
+		};
+		return function (piece) {
+			console.log(piece)
+			return lookup[piece];
+		};
+	})()
 };
