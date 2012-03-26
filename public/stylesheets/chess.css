@@ -23,7 +23,6 @@
 .ChessBoardInner45{
 	width:360px;
 	height:360px;
-	background-image:url('../images/board_and_pieces/board-bg-brown.png');
 	border:1px solid #000;
 	top:0px;
 }

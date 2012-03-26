@@ -1,19 +1,14 @@
 
 window.DHTMLGoodies = {}
-unless String.trim
-  String::trim = ->
-    @replace /^\s+|\s+$/, ""
 
 class window.DHTMLGoodies.ChessFen
   constructor: (props) ->
-    @pieceType = "cases"
     @squareSize = 45
     @cssPath = "css/chess.css"
     @parentRef = document.body
     @imageFolder = "images/"
     @boardLabels = true
     @flipBoardWhenBlackToMove = true
-    console.log('@__setInitProps', @__setInitProps)
     @__setInitProps props  if props
     @init()
     return this
@@ -24,14 +19,10 @@ class window.DHTMLGoodies.ChessFen
     @squareSize = props.squareSize  if props.squareSize
     @boardLabels = props.boardLabels  if props.boardLabels or props.boardLabels is false
     @flipBoardWhenBlackToMove = props.flipBoardWhenBlackToMove  if props.flipBoardWhenBlackToMove or props.flipBoardWhenBlackToMove is false
-    @pieceType = props.pieceType  if props.pieceType
     @pieceMovedCallback = props.pieceMovedCallback  if props.pieceMovedCallback
 
   setSquareSize: (squareSize) ->
     @squareSize = squareSize
-
-  setPieceType: (pieceType) ->
-    @pieceType = pieceType
 
   init: ->
     @__loadCss @cssPath
@@ -111,6 +102,7 @@ class window.DHTMLGoodies.ChessFen
       no_++
 
   __loadFen: (fenString, boardEl) ->
+    @__createSquareDivs(boardEl)
     items = fenString.split(/\s/g)
     pieces = items[0]
     currentCol = 0
@@ -124,24 +116,40 @@ class window.DHTMLGoodies.ChessFen
     no_ = 0
 
     while no_ < pieces.length
+      piece = $('#square' + currentCol)[0]
+      piece.empty;
       character = pieces.substr(no_, 1)
       if character.match(/[A-Z]/i)
-        boardPos = @__getBoardPosByCol(currentCol)
-        piece = document.createElement("DIV")
         span = document.createElement("p")
         span.innerHTML = @__getUnicodeForPiece(character)
         span.draggable = true
         span.ondragstart = onDragStart
         span.className = "Span45"
-        piece.style.position = "absolute"
-        piece.style.left = boardPos.x + "px"
-        piece.style.top = boardPos.y + "px"
-        piece.className = "ChessPiece" + @squareSize
+        console.log('piece=', piece)
         piece.appendChild span
-        boardEl.appendChild piece
         currentCol++
       else currentCol += character / 1  if character.match(/[0-8]/)
       no_++
+
+  __createSquareDivs: (boardEl) ->
+    for square in [0..63]
+      boardEl.appendChild(@__createSquareDiv(square))
+    
+  __createSquareDiv: (square) ->
+    row = Math.floor(square / 8)
+    column = Math.floor(square % 8)
+    piece = document.createElement("DIV")
+    boardPos = @__getBoardPosByCol(square)
+    piece.style.position = "absolute"
+    piece.style.left = boardPos.x + "px"
+    piece.style.top = boardPos.y + "px"
+    piece.className = "ChessPiece" + @squareSize
+    piece.id = 'square' + square 
+    if row % 2 == column % 2
+      $(piece).css('background-color', 'rgb(157, 122, 89)')
+    else
+      $(piece).css('background-color', 'rgb(228, 190, 153)')
+    piece
 
   __getSquareIndexByBoardPos: (x, y) ->
     row = 7 - Math.floor(y / @squareSize)
@@ -187,7 +195,6 @@ class window.DHTMLGoodies.ChessFen
 
 
     (piece) ->
-      console.log piece
       lookup[piece]
   )()
   __getEl: (elRef) ->
