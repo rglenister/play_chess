@@ -36,7 +36,6 @@ class window.DHTMLGoodies.ChessFen
   loadFen: (fenString, element) ->
     @__setWhoToMove fenString
     element = $('#' + element)[0]
-    console.log('element=' + element)
     element.innerHTML = ''
     boardOuter = document.createElement('div')
     boardOuter.className = 'chess-board'
@@ -67,58 +66,29 @@ class window.DHTMLGoodies.ChessFen
       element.appendChild board
     @__loadFen fenString, board
 
-  __addBoardLabels: (boardOuter) ->
-    letters = 'ABCDEFGH'
-    no_ = 1
-
-    while no_ <= 8
-      file = document.createElement('DIV')
-      file.style.position = 'absolute'
-      file.style.right = ((8 - no_) * @squareSize) + 'px'
-      file.style.bottom = '0px'
-      file.innerHTML = letters.substr((no_ - 1), 1)
-      file.style.textAlign = 'center'
-      file.style.width = @squareSize + 'px'
-      boardOuter.appendChild file
-      file.className = 'chess-board-label'
-      rank = document.createElement('DIV')
-      rank.style.position = 'absolute'
-      rank.style.left = '0px'
-      rank.style.top = ((8 - no_) * @squareSize) + 'px'
-      rank.innerHTML = no_
-      rank.style.height = @squareSize + 'px'
-      rank.style.lineHeight = @squareSize + 'px'
-      boardOuter.appendChild rank
-      rank.className = 'chess-board-label'
-      if @whoToMove is 'b' and @flipBoardWhenBlackToMove
-        rank.innerHTML = 9 - no_
-        file.innerHTML = letters.substr((8 - no_), 1)
-      no_++
-
   __loadFen: (fenString, boardEl) ->
     @__createSquares(boardEl)
-    items = fenString.split(/\s/g)
-    pieces = items[0]
-    currentCol = 0
-    color = 'w'
+    @__squareToPieceMap = @__decodeFen fenString
     that = this
     onDragStart = (event) ->
       pieceDiv = event.currentTarget.parentElement
       fromSquare = that.__getSquareIndexByBoardPos(pieceDiv.offsetLeft, pieceDiv.offsetTop)
       event.dataTransfer.setData 'text/plain', fromSquare
 
-    no_ = 0
-
-    while no_ < pieces.length
-      square = $('#square' + currentCol)[0]
+    for index, pieceChar of @__squareToPieceMap
+      console.log(index, pieceChar)
+      square = $('#square' + index)[0]
       square.empty;
-      character = pieces.substr(no_, 1)
-      if character.match(/[A-Z]/i)
-        piece = @__createPiece(character, onDragStart)
-        square.appendChild piece
-        currentCol++
-      else currentCol += character / 1  if character.match(/[0-8]/)
-      no_++
+      piece = @__createPiece(pieceChar, onDragStart)
+      square.appendChild piece
+
+  __decodeFen: (fen) ->
+    encodedPieceArray = fen.split(/\s/g)[0].split('/').reverse().join('').split('')
+    pieceArray = _.reduce encodedPieceArray, ((sum, s) -> sum.concat(if isNaN(s) then [s] else Array(Number(s)))), []
+    squareToPieceMap = {}
+    for piece, i in pieceArray
+      squareToPieceMap[i] = piece if pieceArray[i]
+    squareToPieceMap
 
   __createSquares: (boardEl) ->
     for squareIndex in [0..63]
@@ -150,17 +120,12 @@ class window.DHTMLGoodies.ChessFen
     square = row * 8 + column
     square
 
-  __getBoardPosByCol: (col) ->
-    rank = 0
-    while col >= 8
-      rank++
-      col -= 8
+  __getBoardPosByCol: (squareIndex) ->
+    row = 7 - Math.floor(squareIndex / 8)
+    column = Math.floor(squareIndex % 8)
     retArray = {}
-    if @whoToMove is 'b' and @flipBoardWhenBlackToMove
-      col = 7 - col
-      rank = 7 - rank
-    retArray.x = col * @squareSize
-    retArray.y = rank * @squareSize
+    retArray.y = row * @squareSize
+    retArray.x = column * @squareSize
     retArray
 
   __getUnicodeForPiece: (->
@@ -178,7 +143,36 @@ class window.DHTMLGoodies.ChessFen
       q: '\u265B'
       k: '\u265A'
 
-
     (piece) ->
       lookup[piece]
   )()
+
+  __addBoardLabels: (boardOuter) ->
+    letters = 'ABCDEFGH'
+    no_ = 1
+
+    while no_ <= 8
+      file = document.createElement('DIV')
+      file.style.position = 'absolute'
+      file.style.right = ((8 - no_) * @squareSize) + 'px'
+      file.style.bottom = '0px'
+      file.innerHTML = letters.substr((no_ - 1), 1)
+      file.style.textAlign = 'center'
+      file.style.width = @squareSize + 'px'
+      boardOuter.appendChild file
+      file.className = 'chess-board-label'
+      rank = document.createElement('DIV')
+      rank.style.position = 'absolute'
+      rank.style.left = '0px'
+      rank.style.top = ((8 - no_) * @squareSize) + 'px'
+      rank.innerHTML = no_
+      rank.style.height = @squareSize + 'px'
+      rank.style.lineHeight = @squareSize + 'px'
+      boardOuter.appendChild rank
+      rank.className = 'chess-board-label'
+      if @whoToMove is 'b' and @flipBoardWhenBlackToMove
+        rank.innerHTML = 9 - no_
+        file.innerHTML = letters.substr((8 - no_), 1)
+      no_++
+
+  
