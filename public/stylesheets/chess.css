@@ -1,72 +1,39 @@
-/* Css rules for board with 60x60 pixel squares */
-.ChessBoardInner60{
-	width:480px;
-	height:480px;
-	background-image:url('../images/board_and_pieces/board-bg-brown-480.png');
-	border:1px solid #000;
-	top:0px;
-}
-
-.ChessBoard60{
-	width:495px;
-	height:500px;
-	padding:0px;
-
-}
-.ChessPiece60{
-	width:60px;
-	height:60px;
-	
-}
-
-/* Css rules for board with 45x45 pixel squares */
-.ChessBoardInner45{
+/* Css rules for the board */
+.chess-board-inner {
 	width:360px;
 	height:360px;
 	border:1px solid #000;
 	top:0px;
 }
 
-.ChessBoard45{
+.chess-board {
 	width:375px;
 	height:380px;
 	padding:0px;
 
 }
 
-.ChessPiece45{
+.chess-board-label {
+    font-size:0.9em;
+	font-weight:bold;
+}
+
+.chess-square-white, .chess-square-black {
     width:45px;
     height:45px;
 }
 
-.Span45{
+.chess-square-white {
+	background-color: rgb(157, 122, 89)
+}
+
+.chess-square-black {
+    background-color: rgb(228, 190, 153)
+}
+
+.chess-piece {
     font-size:45px;
     line-height: 45px;
     text-align:center;
 	vertical-align: bottom;
 }
-
-/* Css rules for board with 30x30 pixel squares */
-.ChessBoardInner30{
-	width:240px;
-	height:240px;
-	background-image:url('../images/board_and_pieces/board-bg-brown-240.png');
-	border:1px solid #000;
-	top:0px;
-}
-
-.ChessBoard30{
-	width:255px;
-	height:260px;
-	padding:0px;
-
-}
-.ChessBoardLabel45{
-	font-size:0.9em;
-}
-
-.ChessBoardLabel{	/* Labels A-F, 1-8 around chess board */
-	font-weight:bold;
-}
-
-

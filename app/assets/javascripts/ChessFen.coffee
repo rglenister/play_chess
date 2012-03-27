@@ -4,14 +4,13 @@ window.DHTMLGoodies = {}
 class window.DHTMLGoodies.ChessFen
   constructor: (props) ->
     @squareSize = 45
-    @cssPath = "css/chess.css"
+    @cssPath = 'css/chess.css'
     @parentRef = document.body
-    @imageFolder = "images/"
+    @imageFolder = 'images/'
     @boardLabels = true
     @flipBoardWhenBlackToMove = true
     @__setInitProps props  if props
-    @init()
-    return this
+    this
 
   __setInitProps: (props) ->
     @cssPath = props.cssPath  if props.cssPath
@@ -20,12 +19,6 @@ class window.DHTMLGoodies.ChessFen
     @boardLabels = props.boardLabels  if props.boardLabels or props.boardLabels is false
     @flipBoardWhenBlackToMove = props.flipBoardWhenBlackToMove  if props.flipBoardWhenBlackToMove or props.flipBoardWhenBlackToMove is false
     @pieceMovedCallback = props.pieceMovedCallback  if props.pieceMovedCallback
-
-  setSquareSize: (squareSize) ->
-    @squareSize = squareSize
-
-  init: ->
-    @__loadCss @cssPath
 
   setFlipBoardWhenBlackToMove: (flipBoardWhenBlackToMove) ->
     @flipBoardWhenBlackToMove = flipBoardWhenBlackToMove
@@ -42,18 +35,19 @@ class window.DHTMLGoodies.ChessFen
 
   loadFen: (fenString, element) ->
     @__setWhoToMove fenString
-    element = @__getEl(element)
-    element.innerHTML = ""
-    boardOuter = document.createElement("DIV")
-    boardOuter.className = "ChessBoard" + @squareSize
-    boardOuter.style.position = "relative"
-    board = document.createElement("DIV")
-    board.className = "ChessBoardInner" + @squareSize
-    board.id = "chessBoardInnerID"
+    element = $('#' + element)[0]
+    console.log('element=' + element)
+    element.innerHTML = ''
+    boardOuter = document.createElement('div')
+    boardOuter.className = 'chess-board'
+    boardOuter.style.position = 'relative'
+    board = document.createElement('div')
+    board.className = 'chess-board-inner'
+    board.id = 'chessBoardInnerID'
     that = this
     board.ondrop = (event) ->
-      fromSquare = parseInt(event.dataTransfer.getData("text/plain"))
-      offset = $("#chessBoardInnerID").offset()
+      fromSquare = parseInt(event.dataTransfer.getData('text/plain'))
+      offset = $('#chessBoardInnerID').offset()
       toSquare = that.__getSquareIndexByBoardPos(event.clientX - offset.left, event.clientY - offset.top)
       that.pieceMovedCallback fromSquare, toSquare
       false
@@ -64,92 +58,91 @@ class window.DHTMLGoodies.ChessFen
     if @boardLabels
       @__addBoardLabels boardOuter
       boardOuter.appendChild board
-      board.style.position = "absolute"
-      board.style.top = "0px"
-      board.style.right = "0px"
+      board.style.position = 'absolute'
+      board.style.top = '0px'
+      board.style.right = '0px'
       element.appendChild boardOuter
     else
-      board.style.position = "relative"
+      board.style.position = 'relative'
       element.appendChild board
     @__loadFen fenString, board
 
   __addBoardLabels: (boardOuter) ->
-    letters = "ABCDEFGH"
+    letters = 'ABCDEFGH'
     no_ = 1
 
     while no_ <= 8
-      file = document.createElement("DIV")
-      file.style.position = "absolute"
-      file.style.right = ((8 - no_) * @squareSize) + "px"
-      file.style.bottom = "0px"
+      file = document.createElement('DIV')
+      file.style.position = 'absolute'
+      file.style.right = ((8 - no_) * @squareSize) + 'px'
+      file.style.bottom = '0px'
       file.innerHTML = letters.substr((no_ - 1), 1)
-      file.style.textAlign = "center"
-      file.style.width = @squareSize + "px"
+      file.style.textAlign = 'center'
+      file.style.width = @squareSize + 'px'
       boardOuter.appendChild file
-      file.className = "ChessBoardLabel ChessBoardLabel" + @squareSize
-      rank = document.createElement("DIV")
-      rank.style.position = "absolute"
-      rank.style.left = "0px"
-      rank.style.top = ((8 - no_) * @squareSize) + "px"
+      file.className = 'chess-board-label'
+      rank = document.createElement('DIV')
+      rank.style.position = 'absolute'
+      rank.style.left = '0px'
+      rank.style.top = ((8 - no_) * @squareSize) + 'px'
       rank.innerHTML = no_
-      rank.style.height = @squareSize + "px"
-      rank.style.lineHeight = @squareSize + "px"
+      rank.style.height = @squareSize + 'px'
+      rank.style.lineHeight = @squareSize + 'px'
       boardOuter.appendChild rank
-      rank.className = "ChessBoardLabel ChessBoardLabel" + @squareSize
-      if @whoToMove is "b" and @flipBoardWhenBlackToMove
+      rank.className = 'chess-board-label'
+      if @whoToMove is 'b' and @flipBoardWhenBlackToMove
         rank.innerHTML = 9 - no_
         file.innerHTML = letters.substr((8 - no_), 1)
       no_++
 
   __loadFen: (fenString, boardEl) ->
-    @__createSquareDivs(boardEl)
+    @__createSquares(boardEl)
     items = fenString.split(/\s/g)
     pieces = items[0]
     currentCol = 0
-    color = "w"
+    color = 'w'
     that = this
     onDragStart = (event) ->
       pieceDiv = event.currentTarget.parentElement
       fromSquare = that.__getSquareIndexByBoardPos(pieceDiv.offsetLeft, pieceDiv.offsetTop)
-      event.dataTransfer.setData "text/plain", fromSquare
+      event.dataTransfer.setData 'text/plain', fromSquare
 
     no_ = 0
 
     while no_ < pieces.length
-      piece = $('#square' + currentCol)[0]
-      piece.empty;
+      square = $('#square' + currentCol)[0]
+      square.empty;
       character = pieces.substr(no_, 1)
       if character.match(/[A-Z]/i)
-        span = document.createElement("p")
-        span.innerHTML = @__getUnicodeForPiece(character)
-        span.draggable = true
-        span.ondragstart = onDragStart
-        span.className = "Span45"
-        console.log('piece=', piece)
-        piece.appendChild span
+        piece = @__createPiece(character, onDragStart)
+        square.appendChild piece
         currentCol++
       else currentCol += character / 1  if character.match(/[0-8]/)
       no_++
 
-  __createSquareDivs: (boardEl) ->
-    for square in [0..63]
-      boardEl.appendChild(@__createSquareDiv(square))
+  __createSquares: (boardEl) ->
+    for squareIndex in [0..63]
+      boardEl.appendChild(@__createSquare(squareIndex))
     
-  __createSquareDiv: (square) ->
-    row = Math.floor(square / 8)
-    column = Math.floor(square % 8)
-    piece = document.createElement("DIV")
-    boardPos = @__getBoardPosByCol(square)
-    piece.style.position = "absolute"
-    piece.style.left = boardPos.x + "px"
-    piece.style.top = boardPos.y + "px"
-    piece.className = "ChessPiece" + @squareSize
-    piece.id = 'square' + square 
-    if row % 2 == column % 2
-      $(piece).css('background-color', 'rgb(157, 122, 89)')
-    else
-      $(piece).css('background-color', 'rgb(228, 190, 153)')
-    piece
+  __createSquare: (squareIndex) ->
+    row = Math.floor(squareIndex / 8)
+    column = Math.floor(squareIndex % 8)
+    square = document.createElement('div')
+    boardPos = @__getBoardPosByCol(squareIndex)
+    square.style.position = 'absolute'
+    square.style.left = boardPos.x + 'px'
+    square.style.top = boardPos.y + 'px'
+    square.className = 'chess-square-' + (if row % 2 == column % 2 then 'black' else 'white')
+    square.id = 'square' + squareIndex 
+    square
+
+  __createPiece: (character, onDragStart) ->
+    piece = document.createElement('p')
+    piece.innerHTML = @__getUnicodeForPiece(character)
+    piece.draggable = true
+    piece.ondragstart = onDragStart
+    piece.className = 'chess-piece'
+    piece    
 
   __getSquareIndexByBoardPos: (x, y) ->
     row = 7 - Math.floor(y / @squareSize)
@@ -163,20 +156,12 @@ class window.DHTMLGoodies.ChessFen
       rank++
       col -= 8
     retArray = {}
-    if @whoToMove is "b" and @flipBoardWhenBlackToMove
+    if @whoToMove is 'b' and @flipBoardWhenBlackToMove
       col = 7 - col
       rank = 7 - rank
     retArray.x = col * @squareSize
     retArray.y = rank * @squareSize
     retArray
-
-  __loadCss: (cssFile) ->
-    lt = document.createElement("LINK")
-    lt.href = cssFile + "?rand=" + Math.random()
-    lt.rel = "stylesheet"
-    lt.media = "screen"
-    lt.type = "text/css"
-    document.getElementsByTagName("HEAD")[0].appendChild lt
 
   __getUnicodeForPiece: (->
     lookup =
@@ -197,11 +182,3 @@ class window.DHTMLGoodies.ChessFen
     (piece) ->
       lookup[piece]
   )()
-  __getEl: (elRef) ->
-    if typeof elRef is "string"
-      return document.getElementById(elRef)  if document.getElementById(elRef)
-      return document.forms[elRef]  if document.forms[elRef]
-      return document[elRef]  if document[elRef]
-      return window[elRef]  if window[elRef]
-    elRef
-    
