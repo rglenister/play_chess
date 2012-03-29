@@ -6,32 +6,17 @@ class window.DHTMLGoodies.ChessFen
     @squareSize = 45
     @cssPath = 'css/chess.css'
     @parentRef = document.body
-    @imageFolder = 'images/'
     @boardLabels = true
-    @flipBoardWhenBlackToMove = true
     @__setInitProps props  if props
-    this
 
   __setInitProps: (props) ->
     @cssPath = props.cssPath  if props.cssPath
-    @imageFolder = props.imageFolder  if props.imageFolder
     @squareSize = props.squareSize  if props.squareSize
     @boardLabels = props.boardLabels  if props.boardLabels or props.boardLabels is false
-    @flipBoardWhenBlackToMove = props.flipBoardWhenBlackToMove  if props.flipBoardWhenBlackToMove or props.flipBoardWhenBlackToMove is false
     @pieceMovedCallback = props.pieceMovedCallback  if props.pieceMovedCallback
-
-  setFlipBoardWhenBlackToMove: (flipBoardWhenBlackToMove) ->
-    @flipBoardWhenBlackToMove = flipBoardWhenBlackToMove
-
-  getWhoToMove: ->
-    @whoToMove
 
   setBoardLabels: (boardLabels) ->
     @boardLabels = boardLabels
-
-  __setWhoToMove: (fenString) ->
-    items = fenString.split(/\s/g)
-    @whoToMove = items[1].trim()
 
   __occupied: (squareIndex) ->
     @__squareToPieceMap[squareIndex]?
@@ -66,22 +51,19 @@ class window.DHTMLGoodies.ChessFen
     event.dataTransfer.setData 'text/plain', fromSquare
 
   __onDrop: (event) ->
-    fromSquare = parseInt(event.dataTransfer.getData('text/plain'))
-    offset = $('#chessBoardInnerID').offset()
-    toSquare = parseInt(event.toElement.id)
-    @pieceMovedCallback fromSquare, toSquare
+    fromSquare = event.dataTransfer.getData('text/plain')
+    toSquare = event.target.id
+    if toSquare == "" then toSquare = event.target.parentNode.id
+    @pieceMovedCallback parseInt(fromSquare), parseInt(toSquare)
     false
 
-  loadFen: (fenString, element) ->
-    @__setWhoToMove fenString
-    element = $('#' + element)[0]
+  init: (element) ->
     element.innerHTML = ''
     boardOuter = document.createElement('div')
     boardOuter.className = 'chess-board'
     boardOuter.style.position = 'relative'
     board = document.createElement('div')
     board.className = 'chess-board-inner'
-    board.id = 'chessBoardInnerID'
     board.ondrop = @__onDrop.bind(this)
 
     board.ondragover = ->
@@ -97,10 +79,11 @@ class window.DHTMLGoodies.ChessFen
     else
       board.style.position = 'relative'
       element.appendChild board
-    @__loadFen fenString, board
+    @__createSquares(board)
 
-  __loadFen: (fenString, boardEl) ->
-    @__createSquares(boardEl)
+  loadFen: (fenString, element) ->
+    boardEl = $('.chess-board-inner')[0]
+    $(boardEl.children).empty()
     @__squareToPieceMap = @__decodeFen fenString
 
     for index, pieceChar of @__squareToPieceMap
@@ -108,6 +91,7 @@ class window.DHTMLGoodies.ChessFen
       square.empty;
       piece = @__createPiece(pieceChar, 'chess-piece')
       piece.ondragstart = @__onDragStart.bind(this)
+      piece.ondragenter = (event) -> return false
       piece.onmousedown = @__onMouseDown.bind(this)
       piece.onmouseup = @__onMouseUp.bind(this)
       square.appendChild piece
@@ -193,9 +177,6 @@ class window.DHTMLGoodies.ChessFen
       rank.style.lineHeight = @squareSize + 'px'
       boardOuter.appendChild rank
       rank.className = 'chess-board-label'
-      if @whoToMove is 'b' and @flipBoardWhenBlackToMove
-        rank.innerHTML = 9 - no_
-        file.innerHTML = letters.substr((8 - no_), 1)
       no_++
 
   

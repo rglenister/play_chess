@@ -30,16 +30,9 @@
             };
         var props = {
                 cssPath: '@routes.Assets.at("stylesheets/chess.css")',
-                imageFolder: '@routes.Assets.at("images/board_and_pieces/")',
                 pieceMovedCallback: pieceMoved,
-                flipBoardWhenBlackToMove: false
         };
             
-        chessObj = new window.DHTMLGoodies.ChessFen(props);
-        chessObj.loadFen('@fen', 'chessBoard1');      
-    </script>
-            
-    <script type="text/javascript" charset="utf-8">
         var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
         var chessSocket = new WS("@routes.Application.chess(username).webSocketURL()")
     
@@ -48,8 +41,7 @@
                 {fromSquare: fromSquare, toSquare: toSquare}
             ))
         }
-
-         var receiveEvent = function(event) {
+        var receiveEvent = function(event) {
              var data = JSON.parse(event.data)
              
              // Handle errors
@@ -62,17 +54,22 @@
                  $("#onChat").show()
              }
              if(data.kind === 'fen') {
-                 console.log('fen -', data.message)
-                 chessObj.loadFen(data.message, 'chessBoard1')                	 
+                 console.log('received fen -', data.message);
+                 chessObj.loadFen(data.message, boardDiv);                	 
              }
              // Update the members list
-             $("#members").html('') 
+             $("#members").html('');
              $(data.members).each(function() {
-                 $("#members").append('<li>' + this + '</li>')
+                 $("#members").append('<li>' + this + '</li>');
              })
-         }
-                      
-         chessSocket.onmessage = receiveEvent
+        }       
+        
+        chessObj = new window.DHTMLGoodies.ChessFen(props);
+        boardDiv = $('#' + 'chessBoard1')[0];
+        chessObj.init(boardDiv)
+        chessObj.loadFen('@fen', boardDiv);      
+
+        chessSocket.onmessage = receiveEvent
     </script> 
     
     
