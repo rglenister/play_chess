@@ -1,26 +1,26 @@
 /* Css rules for the board */
 .chess-board-inner {
-	width:360px;
-	height:360px;
-	border:1px solid #000;
-	top:0px;
+	width: 360px;
+	height: 360px;
+	border: 1px solid #000;
+	top: 0px;
 }
 
 .chess-board {
-	width:375px;
-	height:380px;
-	padding:0px;
+	width: 375px;
+	height: 380px;
+	padding: 0px;
 
 }
 
 .chess-board-label {
-    font-size:0.9em;
-	font-weight:bold;
+    font-size: 0.9em;
+	font-weight: bold;
 }
 
 .chess-square-white, .chess-square-black {
-    width:45px;
-    height:45px;
+    width: 45px;
+    height: 45px;
 }
 
 .chess-square-white {
@@ -31,9 +31,17 @@
     background-color: rgb(228, 190, 153)
 }
 
-.chess-piece {
-    font-size:45px;
+.chess-piece, .chess-piece-threatened, .chess-piece-teaching {
+    font-size: 45px;
     line-height: 45px;
-    text-align:center;
+    text-align: center;
 	vertical-align: bottom;
+}
+
+.chess-piece-threatened {
+	color: red;
+}
+
+.chess-piece-teaching {
+	color: yellow
 }

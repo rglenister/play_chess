@@ -33,6 +33,45 @@ class window.DHTMLGoodies.ChessFen
     items = fenString.split(/\s/g)
     @whoToMove = items[1].trim()
 
+  __occupied: (squareIndex) ->
+    @__squareToPieceMap[squareIndex]?
+
+  __findTeachingSquares: (fromSquare) ->
+    [20, 28, 36, 44, 52]
+    
+  __onMouseDown: (event) ->
+    squareDiv = event.currentTarget.parentElement
+    fromSquare = squareDiv.id
+    pieceChar = @__squareToPieceMap[fromSquare]
+    @__teachingSquares = @__findTeachingSquares(fromSquare)
+    for i in @__teachingSquares
+      square = $('#' + i)[0]
+      if !@__occupied(i)
+        square.appendChild(@__createPiece(pieceChar, 'chess-piece-teaching'))
+      else
+        square.children[0].className = 'chess-piece-threatened'
+
+  __onMouseUp: (event) ->
+    for i in @__teachingSquares
+      squareDiv = $('#' + i)[0]
+      if !@__occupied(i)
+        squareDiv.innerHTML = ''
+      else
+        squareDiv.children[0].className = 'chess-piece'
+      delete @__teachingSquares
+
+  __onDragStart: (event) ->
+    pieceDiv = event.currentTarget.parentElement
+    fromSquare = pieceDiv.id
+    event.dataTransfer.setData 'text/plain', fromSquare
+
+  __onDrop: (event) ->
+    fromSquare = parseInt(event.dataTransfer.getData('text/plain'))
+    offset = $('#chessBoardInnerID').offset()
+    toSquare = parseInt(event.toElement.id)
+    @pieceMovedCallback fromSquare, toSquare
+    false
+
   loadFen: (fenString, element) ->
     @__setWhoToMove fenString
     element = $('#' + element)[0]
@@ -43,13 +82,7 @@ class window.DHTMLGoodies.ChessFen
     board = document.createElement('div')
     board.className = 'chess-board-inner'
     board.id = 'chessBoardInnerID'
-    that = this
-    board.ondrop = (event) ->
-      fromSquare = parseInt(event.dataTransfer.getData('text/plain'))
-      offset = $('#chessBoardInnerID').offset()
-      toSquare = that.__getSquareIndexByBoardPos(event.clientX - offset.left, event.clientY - offset.top)
-      that.pieceMovedCallback fromSquare, toSquare
-      false
+    board.ondrop = @__onDrop.bind(this)
 
     board.ondragover = ->
       false
@@ -69,17 +102,14 @@ class window.DHTMLGoodies.ChessFen
   __loadFen: (fenString, boardEl) ->
     @__createSquares(boardEl)
     @__squareToPieceMap = @__decodeFen fenString
-    that = this
-    onDragStart = (event) ->
-      pieceDiv = event.currentTarget.parentElement
-      fromSquare = that.__getSquareIndexByBoardPos(pieceDiv.offsetLeft, pieceDiv.offsetTop)
-      event.dataTransfer.setData 'text/plain', fromSquare
 
     for index, pieceChar of @__squareToPieceMap
-      console.log(index, pieceChar)
-      square = $('#square' + index)[0]
+      square = $('#' + index)[0]
       square.empty;
-      piece = @__createPiece(pieceChar, onDragStart)
+      piece = @__createPiece(pieceChar, 'chess-piece')
+      piece.ondragstart = @__onDragStart.bind(this)
+      piece.onmousedown = @__onMouseDown.bind(this)
+      piece.onmouseup = @__onMouseUp.bind(this)
       square.appendChild piece
 
   __decodeFen: (fen) ->
@@ -103,22 +133,15 @@ class window.DHTMLGoodies.ChessFen
     square.style.left = boardPos.x + 'px'
     square.style.top = boardPos.y + 'px'
     square.className = 'chess-square-' + (if row % 2 == column % 2 then 'black' else 'white')
-    square.id = 'square' + squareIndex 
+    square.id = squareIndex 
     square
 
-  __createPiece: (character, onDragStart) ->
+  __createPiece: (character, clazz) ->
     piece = document.createElement('p')
     piece.innerHTML = @__getUnicodeForPiece(character)
     piece.draggable = true
-    piece.ondragstart = onDragStart
-    piece.className = 'chess-piece'
+    piece.className = clazz
     piece    
-
-  __getSquareIndexByBoardPos: (x, y) ->
-    row = 7 - Math.floor(y / @squareSize)
-    column = Math.floor(x / @squareSize)
-    square = row * 8 + column
-    square
 
   __getBoardPosByCol: (squareIndex) ->
     row = 7 - Math.floor(squareIndex / 8)
