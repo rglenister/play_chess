@@ -22,11 +22,11 @@ object Application extends Controller {
   }
   
   /**
-   * Display the chat room page.
+   * Display the chess room page.
    */
   def chessRoom(username: Option[String]) = Action { implicit request =>
     username.filterNot(_.isEmpty).map { username =>
-      Ok(views.html.chessRoom(username, ChessRoom.fenEncodeGame))
+      Ok(views.html.chessRoom(username, ChessRoom.encodeGame.toString()))
     }.getOrElse {
       Redirect(routes.Application.index).flashing(
         "error" -> "Please choose a valid username."

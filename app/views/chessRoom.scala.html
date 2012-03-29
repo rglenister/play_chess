@@ -1,4 +1,4 @@
-@(username: String, fen: String)(implicit request: RequestHeader)
+@(username: String, jGame: String)(implicit request: RequestHeader)
 
 @main(Some(username)) {
     
@@ -53,22 +53,25 @@
              } else {
                  $("#onChat").show()
              }
-             if(data.kind === 'fen') {
-                 console.log('received fen -', data.message);
-                 chessObj.loadFen(data.message, boardDiv);                	 
+             if(data.kind === 'game') {
+                 console.log('received message -', data.game);
+                 chessObj.loadGame(data.game, boardDiv);                	 
              }
              // Update the members list
              $("#members").html('');
              $(data.members).each(function() {
                  $("#members").append('<li>' + this + '</li>');
              })
-        }       
+        }   
         
         chessObj = new window.DHTMLGoodies.ChessFen(props);
         boardDiv = $('#' + 'chessBoard1')[0];
-        chessObj.init(boardDiv)
-        chessObj.loadFen('@fen', boardDiv);      
-
+        chessObj.init(boardDiv);
+//        console.log('jGame=' + jGame)
+//        var game = JSON.parse(@jGame)
+//        console.log('game=' + game)
+//        chessObj.loadFen(game.fen, boardDiv)
+        
         chessSocket.onmessage = receiveEvent
     </script> 
     

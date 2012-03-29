@@ -13,7 +13,10 @@ import akka.pattern.ask
 
 import play.api.Play.current
 
+import com.codahale.jerkson.Json
+
 import chess.Game
+import chess.Move
 import chess.codec.FENEncoder
 
 
@@ -29,8 +32,29 @@ object ChessRoom {
     roomActor
   }
 
-  def fenEncodeGame = FENEncoder(game.currentPosition).encode
-
+  def fenEncodeGame = FENEncoder(game.currentPosition).encode  
+  
+  def encodeMove(move: Move) = {
+    JsObject(
+      Seq(
+        "from" -> JsNumber(move.fromSquare),
+        "to" -> JsNumber(move.toSquare),
+        "isCapture" -> JsBoolean(move.isCapture)
+      )
+    )
+  }
+  
+  def encodeGame = {
+    JsObject(
+      Seq(
+        "fen" -> JsString(ChessRoom.fenEncodeGame),
+        "movelist" -> JsArray(
+          ChessRoom.game.currentPosition.moveList.map { encodeMove(_) }
+        )
+      )
+    )
+  }
+    
   def join(username:String):Promise[(Iteratee[JsValue,_],Enumerator[JsValue])] = {
     (default ? Join(username)).asPromise.map {
       
@@ -90,7 +114,7 @@ class ChessRoom extends Actor {
     case MakeMove(username, fromSquare, toSquare) => {
       Logger.info("ChessRoom.receive MakeMove fromSquare=" + fromSquare + " toSquare=" + toSquare)
       ChessRoom.game = ChessRoom.game.makeMove(fromSquare.toInt, toSquare.toInt).getOrElse(ChessRoom.game)
-      notifyAll("fen", username, ChessRoom.fenEncodeGame)
+      notifyAll("game", username, "")
     }
     
     case Quit(username) => {
@@ -106,6 +130,7 @@ class ChessRoom extends Actor {
         "kind" -> JsString(kind),
         "user" -> JsString(user),
         "message" -> JsString(text),
+        "game" -> ChessRoom.encodeGame,
         "members" -> JsArray(
           members.keySet.toList.map(JsString)
         )

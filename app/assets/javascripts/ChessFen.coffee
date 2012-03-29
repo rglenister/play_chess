@@ -22,11 +22,11 @@ class window.DHTMLGoodies.ChessFen
     @__squareToPieceMap[squareIndex]?
 
   __findTeachingSquares: (fromSquare) ->
-    [20, 28, 36, 44, 52]
+    (move.to for move in (@__game.movelist.filter (move) -> fromSquare is move.from))
     
   __onMouseDown: (event) ->
     squareDiv = event.currentTarget.parentElement
-    fromSquare = squareDiv.id
+    fromSquare = parseInt(squareDiv.id)
     pieceChar = @__squareToPieceMap[fromSquare]
     @__teachingSquares = @__findTeachingSquares(fromSquare)
     for i in @__teachingSquares
@@ -37,6 +37,9 @@ class window.DHTMLGoodies.ChessFen
         square.children[0].className = 'chess-piece-threatened'
 
   __onMouseUp: (event) ->
+    @__clearTeaching()
+    
+  __clearTeaching: ->
     for i in @__teachingSquares
       squareDiv = $('#' + i)[0]
       if !@__occupied(i)
@@ -54,6 +57,7 @@ class window.DHTMLGoodies.ChessFen
     fromSquare = event.dataTransfer.getData('text/plain')
     toSquare = event.target.id
     if toSquare == "" then toSquare = event.target.parentNode.id
+    @__clearTeaching()
     @pieceMovedCallback parseInt(fromSquare), parseInt(toSquare)
     false
 
@@ -69,6 +73,9 @@ class window.DHTMLGoodies.ChessFen
     board.ondragover = ->
       false
 
+    board.ondblclick = =>
+      @pieceMovedCallback(0, 0)
+
     if @boardLabels
       @__addBoardLabels boardOuter
       boardOuter.appendChild board
@@ -81,10 +88,11 @@ class window.DHTMLGoodies.ChessFen
       element.appendChild board
     @__createSquares(board)
 
-  loadFen: (fenString, element) ->
+  loadGame: (game, element) ->
+    @__game = game
     boardEl = $('.chess-board-inner')[0]
     $(boardEl.children).empty()
-    @__squareToPieceMap = @__decodeFen fenString
+    @__squareToPieceMap = @__decodeFen game.fen
 
     for index, pieceChar of @__squareToPieceMap
       square = $('#' + index)[0]
@@ -112,7 +120,7 @@ class window.DHTMLGoodies.ChessFen
     row = Math.floor(squareIndex / 8)
     column = Math.floor(squareIndex % 8)
     square = document.createElement('div')
-    boardPos = @__getBoardPosByCol(squareIndex)
+    boardPos = @__getBoardPosBySquareIndex(squareIndex)
     square.style.position = 'absolute'
     square.style.left = boardPos.x + 'px'
     square.style.top = boardPos.y + 'px'
@@ -127,13 +135,10 @@ class window.DHTMLGoodies.ChessFen
     piece.className = clazz
     piece    
 
-  __getBoardPosByCol: (squareIndex) ->
+  __getBoardPosBySquareIndex: (squareIndex) ->
     row = 7 - Math.floor(squareIndex / 8)
     column = Math.floor(squareIndex % 8)
-    retArray = {}
-    retArray.y = row * @squareSize
-    retArray.x = column * @squareSize
-    retArray
+    { x: column * @squareSize, y: row * @squareSize }
 
   __getUnicodeForPiece: (->
     lookup =
