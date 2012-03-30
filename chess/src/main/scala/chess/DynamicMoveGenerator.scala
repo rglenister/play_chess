@@ -173,7 +173,7 @@ class PawnDynamicMoveGenerator(position: Position, fromSquare: Int, piece: Piece
   
   private def generateEnPassant = {
     position.enPassantSquare filter { Board.isAlongSide(_, fromSquare) } map { (epSquare: Int) => 
-      EnPassantMove(fromSquare, epSquare + (if (piece.pieceColor == White) 8 else -8))
+      EnPassantMove(fromSquare, epSquare + (if (piece.pieceColor == White) 8 else -8), epSquare)
     }
   }
   

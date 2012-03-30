@@ -15,8 +15,10 @@ import play.api.Play.current
 
 import com.codahale.jerkson.Json
 
+import chess.PieceType._
 import chess.Game
-import chess.Move
+import chess.{Move, CastlingMove, EnPassantMove, PromotionMove}
+
 import chess.codec.FENEncoder
 
 
@@ -34,22 +36,31 @@ object ChessRoom {
 
   def fenEncodeGame = FENEncoder(game.currentPosition).encode  
   
-  def encodeMove(move: Move) = {
-    JsObject(
-      Seq(
-        "from" -> JsNumber(move.fromSquare),
-        "to" -> JsNumber(move.toSquare),
-        "isCapture" -> JsBoolean(move.isCapture)
-      )
-    )
-  }
-  
   def encodeGame = {
     JsObject(
       Seq(
         "fen" -> JsString(ChessRoom.fenEncodeGame),
         "movelist" -> JsArray(
-          ChessRoom.game.currentPosition.moveList.map { encodeMove(_) }
+          ChessRoom.game.currentPosition.moveList.filter {
+            _ match {
+              case PromotionMove(_, _, _, promoteTo) if promoteTo != Queen => false 
+              case _ => true
+            }
+          } map { move =>
+		    JsObject(
+		      Seq(
+		        "from" -> JsNumber(move.fromSquare),
+		        "to" -> JsNumber(move.toSquare)
+		      ) ++ {
+		        move match {
+                  case CastlingMove(_, _, _) => Seq("castling" -> JsBoolean(true))
+				  case EnPassantMove(_, _, epSquare) => Seq("enPassantCaptureSquare" -> JsNumber(epSquare))
+				  case PromotionMove(_, _, _, _) => Seq("promotion" -> JsBoolean(true))
+				  case _ => Nil
+				}
+		      }
+		    )
+		  }
         )
       )
     )

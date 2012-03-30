@@ -168,7 +168,7 @@ object GamePosition {
   private def createSquareToPieceMap(previousPosition: Position, move: Move) = {
     var squareToPieceMap = movePiece(previousPosition.squareToPieceMap, move.fromSquare, move.toSquare)
     move match {
-      case EnPassantMove(fromSquare, toSquare) => {
+      case EnPassantMove(fromSquare, toSquare, captureSquare) => {
         squareToPieceMap = squareToPieceMap - previousPosition.enPassantSquare.get 
       }
       case CastlingMove(fromSquare, toSquare, boardSide) => {

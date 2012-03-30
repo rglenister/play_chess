@@ -132,7 +132,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.replay(mockPosition)
     
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
-    result should equal (List(BasicMove(33, 41, false), EnPassantMove(33, 42)))
+    result should equal (List(BasicMove(33, 41, false), EnPassantMove(33, 42, 34)))
   }
 
   it should "generate an en passant capture for a black pawn alongside a white pawn that has just moved two squares forward" in {
@@ -141,7 +141,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.replay(mockPosition)
     
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
-    result should equal (List(BasicMove(25, 17, false), EnPassantMove(25, 16)))
+    result should equal (List(BasicMove(25, 17, false), EnPassantMove(25, 16, 24)))
   }
 
   it should "generate a capture for a knight attacking an opposing piece but not for a piece of the same color" in {

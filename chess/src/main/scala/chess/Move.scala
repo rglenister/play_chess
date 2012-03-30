@@ -42,8 +42,9 @@ case class BasicMove(fromSquare: Int, toSquare: Int, isCapture: Boolean) extends
  * 
  * @param fromSquare is the source square.
  * @param toSquare is the destination square.
+ * @param captureSquare is the index of the square containing the pawn that is captured by this move.
  */
-case class EnPassantMove(fromSquare: Int, toSquare: Int) extends Move {
+case class EnPassantMove(fromSquare: Int, toSquare: Int, captureSquare: Int) extends Move {
   def isCapture = true
 }
 
