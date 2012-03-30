@@ -19,14 +19,18 @@
             <ul id="members">
             </ul>
         </div>
+    <div id="dialog-select-promotion-piece" title="Promote to?">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Please select the piece to promote the pawn to.</p>
     </div>
-      
-    <script type="text/javascript" charset="utf-8">
-        var console;
-        var pieceMoved = function (fromSquare, toSquare) {
+
+	</div>
+	
+    <script type="text/javascript">
+    $(function() {
+        var pieceMoved = function (move) {
                 "use strict";
-                console.log('pieceMoved -', 'fromSquare', fromSquare, 'toSquare', toSquare);
-                sendMessage(fromSquare, toSquare)
+                console.log('pieceMoved -', move);
+                sendMessage(move)
             };
         var props = {
                 cssPath: '@routes.Assets.at("stylesheets/chess.css")',
@@ -36,10 +40,11 @@
         var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
         var chessSocket = new WS("@routes.Application.chess(username).webSocketURL()")
     
-        var sendMessage = function(fromSquare, toSquare) {
-            chessSocket.send(JSON.stringify(
-                {fromSquare: fromSquare, toSquare: toSquare}
-            ))
+        var sendMessage = function(move) {
+        	console.log('sending message', move)
+        	json = JSON.stringify(move)
+        	console.log('json=', json)
+            chessSocket.send(json)
         }
         var receiveEvent = function(event) {
              var data = JSON.parse(event.data)
@@ -67,12 +72,16 @@
         chessObj = new window.DHTMLGoodies.ChessFen(props);
         boardDiv = $('#' + 'chessBoard1')[0];
         chessObj.init(boardDiv);
-//        console.log('jGame=' + jGame)
-//        var game = JSON.parse(@jGame)
-//        console.log('game=' + game)
-//        chessObj.loadFen(game.fen, boardDiv)
         
         chessSocket.onmessage = receiveEvent
+        
+        // TODO eliminate this kludge which waits for the webscocket to become ready for use
+        var timeout = window.setTimeout(function() {
+        	// TODO refactor so that a separate request is made to update the page
+            pieceMoved({ "from": 0, "to": 0 })
+        }, 500);
+        
+    });
     </script> 
     
     

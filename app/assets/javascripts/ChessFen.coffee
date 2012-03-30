@@ -1,3 +1,33 @@
+###
+************************************************************************************************************
+Chess Fen Viewer
+Copyright (C) 2007  DTHMLGoodies.com, Alf Magne Kalleland
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+Dhtmlgoodies.com., hereby disclaims all copyright interest in this script
+written by Alf Magne Kalleland.
+
+Alf Magne Kalleland, 2007
+Owner of DHTMLgoodies.com
+
+
+************************************************************************************************************   
+###
+
+# Converted from the original to coffeescript and modified to allow making moves using drag and drop.
 
 window.DHTMLGoodies = {}
 
@@ -7,7 +37,7 @@ class window.DHTMLGoodies.ChessFen
     @cssPath = 'css/chess.css'
     @parentRef = document.body
     @boardLabels = true
-    @__setInitProps props  if props
+    @__setInitProps props if props
 
   __setInitProps: (props) ->
     @cssPath = props.cssPath  if props.cssPath
@@ -22,7 +52,9 @@ class window.DHTMLGoodies.ChessFen
     @__squareToPieceMap[squareIndex]?
 
   __findTeachingSquares: (fromSquare) ->
-    (move.to for move in (@__game.movelist.filter (move) -> fromSquare is move.from))
+    moves = @__game.movelist.filter (move) -> move.from is fromSquare
+    (move.to for move in moves).concat(
+      move.enPassantCaptureSquare for move in moves.filter (move) -> move.enPassantCaptureSquare?)
     
   __onMouseDown: (event) ->
     squareDiv = event.currentTarget.parentElement
@@ -58,8 +90,19 @@ class window.DHTMLGoodies.ChessFen
     toSquare = event.target.id
     if toSquare == "" then toSquare = event.target.parentNode.id
     @__clearTeaching()
-    @pieceMovedCallback parseInt(fromSquare), parseInt(toSquare)
+    move = @__createMove parseInt(fromSquare), parseInt(toSquare)
+    @pieceMovedCallback(move) if move?
     false
+    
+  __createMove: (fromSquare, toSquare) ->
+     move = (@__game.movelist.filter (move) -> move.from is fromSquare and move.to is toSquare)[0]
+     if move
+       if move.isPromotion
+         move.promotionPiece = @__getPromotionPiece()
+       else
+         move.promotionPiece = @__getPromotionPiece()
+       move
+     else undefined
 
   init: (element) ->
     element.innerHTML = ''
@@ -72,9 +115,6 @@ class window.DHTMLGoodies.ChessFen
 
     board.ondragover = ->
       false
-
-    board.ondblclick = =>
-      @pieceMovedCallback(0, 0)
 
     if @boardLabels
       @__addBoardLabels boardOuter
@@ -183,5 +223,26 @@ class window.DHTMLGoodies.ChessFen
       boardOuter.appendChild rank
       rank.className = 'chess-board-label'
       no_++
+
+
+  __getPromotionPiece: ->
+    'Q'
+#    selectedPiece = 'A'
+#    that = this
+#    ->
+#      $("#dialog-select-promotion-piece").dialog({
+#        resizable: false,
+#        height:140,
+#        buttons: {
+#        modal: true,
+#          '\u2658': -> console.log('A'); selectedPiece = 'N'; that.f(); $(this).dialog("close"),
+#          '\u2657': -> f(); $(this).dialog("close"),
+#          '\u2656': -> selectedPiece = 'R'; $(this).dialog("close"),
+#          '\u2655': -> selectedPiece = 'Q'; $(this).dialog("close")
+#        }
+#      }).open()
+#      console.log('finished with the dialog')
+#      selectedPiece
+#    )()
 
   

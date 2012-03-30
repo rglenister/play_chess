@@ -15,6 +15,7 @@ import play.api.Play.current
 
 import com.codahale.jerkson.Json
 
+import chess.PieceType
 import chess.PieceType._
 import chess.Game
 import chess.{Move, CastlingMove, EnPassantMove, PromotionMove}
@@ -53,9 +54,9 @@ object ChessRoom {
 		        "to" -> JsNumber(move.toSquare)
 		      ) ++ {
 		        move match {
-                  case CastlingMove(_, _, _) => Seq("castling" -> JsBoolean(true))
+                  case CastlingMove(_, _, _) => Seq("isCastling" -> JsBoolean(true))
 				  case EnPassantMove(_, _, epSquare) => Seq("enPassantCaptureSquare" -> JsNumber(epSquare))
-				  case PromotionMove(_, _, _, _) => Seq("promotion" -> JsBoolean(true))
+				  case PromotionMove(_, _, _, _) => Seq("isPromotion" -> JsBoolean(true))
 				  case _ => Nil
 				}
 		      }
@@ -73,9 +74,13 @@ object ChessRoom {
       
         // Create an Iteratee to consume the feed
         val iteratee = Iteratee.foreach[JsValue] { event =>
-          val fromSquare = (event \ "fromSquare").as[Int]
-          val toSquare = (event \ "toSquare").as[Int]
-          default ! MakeMove(username, fromSquare, toSquare)
+          val fromSquare = (event \ "from").as[Int]
+          val toSquare = (event \ "to").as[Int]
+          val promotionPiece = (event \ "promotionPiece").asOpt[String].flatMap { p: String =>
+            Some(p(0)) flatMap { PieceType.fromChar(_) }
+          }
+          println("promotionPiece=" + promotionPiece)
+          default ! MakeMove(username, fromSquare, toSquare, promotionPiece)
         }.mapDone { _ =>
           default ! Quit(username)
         }
@@ -122,9 +127,9 @@ class ChessRoom extends Actor {
       notifyAll("join", username, "has entered the room")
     }
     
-    case MakeMove(username, fromSquare, toSquare) => {
-      Logger.info("ChessRoom.receive MakeMove fromSquare=" + fromSquare + " toSquare=" + toSquare)
-      ChessRoom.game = ChessRoom.game.makeMove(fromSquare.toInt, toSquare.toInt).getOrElse(ChessRoom.game)
+    case MakeMove(username, fromSquare, toSquare, promotionPiece) => {
+      Logger.info("ChessRoom.receive MakeMove fromSquare=" + fromSquare + " toSquare=" + toSquare + " promotionPiece=" + promotionPiece)
+      ChessRoom.game = ChessRoom.game.makeMove(fromSquare.toInt, toSquare.toInt, promotionPiece).getOrElse(ChessRoom.game)
       notifyAll("game", username, "")
     }
     
@@ -154,7 +159,7 @@ class ChessRoom extends Actor {
   
 }
 
-case class MakeMove(username: String, fromSquare: Int, toSquare: Int)
+case class MakeMove(username: String, fromSquare: Int, toSquare: Int, promotionPiece: Option[PieceType.Value])
 case class Join(username: String)
 case class Quit(username: String)
 case class NotifyJoin(username: String)

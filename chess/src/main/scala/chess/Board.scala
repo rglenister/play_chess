@@ -15,6 +15,18 @@ object PieceType extends Enumeration {
    * @return the first letter of the type name.
    */
   def toChar(pieceType: PieceType.Value) = if (pieceType == Knight) 'N' else pieceType.toString.head
+  
+  /**
+   * Finds the piece type with the given single character representation.
+   * 
+   * @param p is the character representation of the piece. It is case insensitive.
+   * @return some piece type or none if no piece is represented by the given character.
+   */
+  def fromChar(p: Char): Option[PieceType.Value] = {
+    val up = p.toUpper
+    if (up=='N') Some(Knight)
+    else values find { _.toString.head == up }
+  }
 }
 
 /**
