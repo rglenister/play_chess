@@ -236,7 +236,29 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
     result should equal (List())
   }
+  
+  it should "not generate castling moves for white if the king is in check" in {
+    val squareToPieceMap = Map(4 -> Piece(King, White), 13 -> Piece(Bishop, Black))
+    val mockPosition = createMockPosition(squareToPieceMap, White)
+    EasyMock.expect(mockPosition.canCastle(White, Kingside)).andReturn(true)
+    EasyMock.expect(mockPosition.canCastle(White, Queenside)).andReturn(true)
+    EasyMock.replay(mockPosition)
+    
+    val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
+    result should equal (List())
+  }
 
+  it should "not generate castling moves for black if the king is in check" in {
+    val squareToPieceMap = Map(60 -> Piece(King, Black), 51 -> Piece(Bishop, White))
+    val mockPosition = createMockPosition(squareToPieceMap, Black)
+    EasyMock.expect(mockPosition.canCastle(Black, Kingside)).andReturn(true)
+    EasyMock.expect(mockPosition.canCastle(Black, Queenside)).andReturn(true)
+    EasyMock.replay(mockPosition)
+    
+    val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
+    result should equal (List())
+  }
+  
   it should "not generate a kingside castling move for white unless all squares between king and rook are empty" in {
     for (square <- 5 to 6) {
       val squareToPieceMap = Map(4 -> Piece(King, White), square -> Piece(Knight, White))
