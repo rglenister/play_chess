@@ -239,12 +239,6 @@ class window.DHTMLGoodies.ChessFen
     pieces = 'N,B,R,Q'.split ','
     isBlack = @__squareToPieceMap[move.from][0] is 'p'
     codes = pieces.map((p) => if isBlack then p.toLowerCase() else p).map((p) => @__getUnicodeForPiece p)
- 
-    addButton = (myButtons, code, piece) ->
-      myButtons[code] = -> doCallback($(this), piece)
-      
-    myButtons = {}
-    for i in [0..3]
-      addButton(myButtons, codes[i], pieces[i])
-    $("#dialog-select-promotion-piece").dialog('option', 'buttons', myButtons)
+    buttons = [0..3].map((i) -> {text: codes[i], click: -> doCallback($(this), pieces[i])})  
+    $("#dialog-select-promotion-piece").dialog('option', 'buttons', buttons)
   
