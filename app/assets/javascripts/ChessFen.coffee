@@ -91,18 +91,18 @@ class window.DHTMLGoodies.ChessFen
     if toSquare == "" then toSquare = event.target.parentNode.id
     @__clearTeaching()
     move = @__createMove parseInt(fromSquare), parseInt(toSquare)
-    @pieceMovedCallback(move) if move?
+    setTimeout((=> @__makeMove(move)), 0)
     false
     
   __createMove: (fromSquare, toSquare) ->
-     move = (@__game.movelist.filter (move) -> move.from is fromSquare and move.to is toSquare)[0]
-     if move
-       if move.isPromotion
-         move.promotionPiece = @__getPromotionPiece()
-       else
-         move.promotionPiece = @__getPromotionPiece()
-       move
-     else undefined
+    move = (@__game.movelist.filter (move) -> move.from is fromSquare and move.to is toSquare)[0]
+    if move then jQuery.extend(true, {}, move) else undefined
+    
+  __makeMove: (move) ->
+    if move.isPromotion
+      @__makePromotionMove(move)
+    else
+      @pieceMovedCallback move
 
   init: (element) ->
     element.innerHTML = ''
@@ -224,25 +224,27 @@ class window.DHTMLGoodies.ChessFen
       rank.className = 'chess-board-label'
       no_++
 
-
-  __getPromotionPiece: ->
-    'Q'
-#    selectedPiece = 'A'
-#    that = this
-#    ->
-#      $("#dialog-select-promotion-piece").dialog({
-#        resizable: false,
-#        height:140,
-#        buttons: {
-#        modal: true,
-#          '\u2658': -> console.log('A'); selectedPiece = 'N'; that.f(); $(this).dialog("close"),
-#          '\u2657': -> f(); $(this).dialog("close"),
-#          '\u2656': -> selectedPiece = 'R'; $(this).dialog("close"),
-#          '\u2655': -> selectedPiece = 'Q'; $(this).dialog("close")
-#        }
-#      }).open()
-#      console.log('finished with the dialog')
-#      selectedPiece
-#    )()
-
+  __makePromotionMove: (move) ->
+    doCallback = (window, piece) =>
+      console.log('PIECE=' + piece)
+      window.dialog("close")
+      move.promotionPiece = piece
+      @pieceMovedCallback move
+    
+    $("#dialog-select-promotion-piece").dialog({
+      resizable: false,
+      height:140,
+      modal: true
+    })
+    pieces = 'N,B,R,Q'.split ','
+    isBlack = @__squareToPieceMap[move.from][0] is 'p'
+    codes = pieces.map((p) => if isBlack then p.toLowerCase() else p).map((p) => @__getUnicodeForPiece p)
+ 
+    addButton = (myButtons, code, piece) ->
+      myButtons[code] = -> doCallback($(this), piece)
+      
+    myButtons = {}
+    for i in [0..3]
+      addButton(myButtons, codes[i], pieces[i])
+    $("#dialog-select-promotion-piece").dialog('option', 'buttons', myButtons)
   

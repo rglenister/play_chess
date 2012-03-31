@@ -20,7 +20,7 @@
             </ul>
         </div>
     <div id="dialog-select-promotion-piece" title="Promote to?">
-        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Please select the piece to promote the pawn to.</p>
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Please select the promotion piece.</p>
     </div>
 
 	</div>
@@ -29,7 +29,6 @@
     $(function() {
         var pieceMoved = function (move) {
                 "use strict";
-                console.log('pieceMoved -', move);
                 sendMessage(move)
             };
         var props = {

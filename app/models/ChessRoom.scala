@@ -18,7 +18,7 @@ import com.codahale.jerkson.Json
 import chess.PieceType
 import chess.PieceType._
 import chess.Game
-import chess.{Move, CastlingMove, EnPassantMove, PromotionMove}
+import chess.{Move, BasicMove, CastlingMove, EnPassantMove, PromotionMove}
 
 import chess.codec.FENEncoder
 
@@ -40,7 +40,7 @@ object ChessRoom {
   def encodeGame = {
     JsObject(
       Seq(
-        "fen" -> JsString(ChessRoom.fenEncodeGame),
+        "fen" -> JsString(fenEncodeGame),
         "movelist" -> JsArray(
           ChessRoom.game.currentPosition.moveList.filter {
             _ match {
@@ -54,10 +54,10 @@ object ChessRoom {
 		        "to" -> JsNumber(move.toSquare)
 		      ) ++ {
 		        move match {
-                  case CastlingMove(_, _, _) => Seq("isCastling" -> JsBoolean(true))
+                  case CastlingMove(f, _, _) => Seq("isCastling" -> JsBoolean(true))
 				  case EnPassantMove(_, _, epSquare) => Seq("enPassantCaptureSquare" -> JsNumber(epSquare))
 				  case PromotionMove(_, _, _, _) => Seq("isPromotion" -> JsBoolean(true))
-				  case _ => Nil
+				  case BasicMove(_, _, _) => Nil
 				}
 		      }
 		    )
