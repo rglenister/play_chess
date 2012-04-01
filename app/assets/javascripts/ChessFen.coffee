@@ -91,8 +91,9 @@ class window.DHTMLGoodies.ChessFen
     if toSquare == "" then toSquare = event.target.parentNode.id
     @__clearTeaching()
     move = @__createMove parseInt(fromSquare), parseInt(toSquare)
-#    move.isPromotion = true
-    setTimeout((=> @__makeMove(move)), 0)
+    if move?
+#      move.isPromotion = true
+      setTimeout((=> @__makeMove(move)), 0)
     false
     
   __createMove: (fromSquare, toSquare) ->
@@ -233,9 +234,9 @@ class window.DHTMLGoodies.ChessFen
       height:140,
       modal: true
     })
-    pieces = 'N,B,R,Q'.split ','
-    isBlack = @__squareToPieceMap[move.from][0] is 'p'
-    codes = pieces.map((p) => if isBlack then p.toLowerCase() else p).map((p) => @__getUnicodeForPiece p)
+    pieces = 'NBRQ'.split ''
+    isBlack = 'pnbrqk'.indexOf(@__squareToPieceMap[move.from]) >= 0
+    codes = pieces.map((p) -> if isBlack then p.toLowerCase() else p).map((p) => @__getUnicodeForPiece p)
     buttons = [0..3].map((i) -> {text: codes[i], click: -> doCallback($(this), pieces[i])})  
     $("#dialog-select-promotion-piece").dialog('option', 'buttons', buttons)
   
