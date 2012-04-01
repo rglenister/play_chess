@@ -91,6 +91,7 @@ class window.DHTMLGoodies.ChessFen
     if toSquare == "" then toSquare = event.target.parentNode.id
     @__clearTeaching()
     move = @__createMove parseInt(fromSquare), parseInt(toSquare)
+#    move.isPromotion = true
     setTimeout((=> @__makeMove(move)), 0)
     false
     
@@ -99,10 +100,7 @@ class window.DHTMLGoodies.ChessFen
     if move then jQuery.extend(true, {}, move) else undefined
     
   __makeMove: (move) ->
-    if move.isPromotion
-      @__makePromotionMove(move)
-    else
-      @pieceMovedCallback move
+    if !move.isPromotion then @pieceMovedCallback move else @__makePromotionMove(move)
 
   init: (element) ->
     element.innerHTML = ''
@@ -226,7 +224,6 @@ class window.DHTMLGoodies.ChessFen
 
   __makePromotionMove: (move) ->
     doCallback = (window, piece) =>
-      console.log('PIECE=' + piece)
       window.dialog("close")
       move.promotionPiece = piece
       @pieceMovedCallback move
