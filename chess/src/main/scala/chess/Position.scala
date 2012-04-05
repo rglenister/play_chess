@@ -96,6 +96,19 @@ trait Position {
    */
   lazy val moveList: List[Move] = DynamicMoveGenerator.getMoveList(this).filter(GamePosition(this, _) != None)
 
+  /** true if the side to move is in check else false. */
+  lazy val isCheck = checkCount > 0
+  
+  /** true if the side to move is in check else false. */
+  lazy val checkCount = SquareAttackFinder.findAttackingSquares(this, getKingSquare(sideToMove), opposingSide).length
+
+  /** The game status. */
+  lazy val gameStatus = (moveList.isEmpty, isCheck) match {
+    case (true, true) => GameStatus.Checkmate
+    case (true, false) => GameStatus.Stalemate
+    case _ =>  GameStatus.InProgress
+  }
+  
 }
 
 /**
@@ -216,16 +229,6 @@ class GamePosition(
     val previousPositions: List[Position]
     ) extends Position {
 
-  /** true if the side to move is in check else false. */
-  lazy val isCheck = SquareAttackFinder.isSquareAttacked(this, getKingSquare(sideToMove), opposingSide)
-  
-  /** The game status. */
-  lazy val gameStatus = (moveList.isEmpty, isCheck) match {
-    case (true, true) => GameStatus.Checkmate
-    case (true, false) => GameStatus.Stalemate
-    case _ =>  GameStatus.InProgress
-  }
-  
   /**
    * Gets the hash code of this game position.
    * 

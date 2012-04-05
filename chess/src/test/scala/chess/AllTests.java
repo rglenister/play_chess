@@ -5,18 +5,23 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import chess.codec.FENEncoderSpec;
+import chess.format.AlgebraicMoveFormatterSpec;
+import chess.format.ICCFNumericMoveFormatterSpec;
+
 
 @RunWith(Suite.class)
 @SuiteClasses({
+	AlgebraicMoveFormatterSpec.class,
 	BoardSpec.class,
-	CastlingRightsSpec.class,
 	CastlingMetadataSpec.class,
+	CastlingRightsSpec.class,
 	DynamicMoveGeneratorSpec.class,
 	FENEncoderSpec.class,
+	GamePositionSpec.class,
 	GameSpec.class,
+	ICCFNumericMoveFormatterSpec.class,
 	PieceSquareNotifierSpec.class,
 	PositionSpec.class,
-	GamePositionSpec.class,
 	SquareAttackFinderSpec.class,
 	StaticMoveGeneratorSpec.class
 })

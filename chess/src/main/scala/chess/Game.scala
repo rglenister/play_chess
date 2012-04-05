@@ -13,7 +13,7 @@ case class Player(name: String)
 /**
  * Contains a move and its resulting position.
  */
-case class GameMove( move: Move, position: Position)
+case class GameMove( move: Move, position: Position, nextPosition: Position)
 
 /**
  * Game object.
@@ -49,7 +49,7 @@ class Game(
   } 
   
   /** The current position of this game. */
-  val currentPosition = if (nextMoveMapIndex>0) moveMap(nextMoveMapIndex-1).position else firstPosition
+  val currentPosition = if (nextMoveMapIndex>0) moveMap(nextMoveMapIndex-1).nextPosition else firstPosition
   
   /**
    * Makes a move.
@@ -81,7 +81,7 @@ class Game(
    */
   def makeMove(move: Move): Option[Game] = {
     val nextPosition = GamePosition(currentPosition, move).get
-    val gameMove = GameMove(move, nextPosition)
+    val gameMove = GameMove(move, currentPosition, nextPosition)
     val nextMoveMap = moveMap.dropRight(moveMap.size - nextMoveMapIndex) + (nextMoveMapIndex -> gameMove)
     Some(new Game(firstPosition, nextMoveMap, nextMoveMapIndex+1, players))
   }
