@@ -26,61 +26,9 @@
 	</div>
 	
     <script type="text/javascript">
-    $(function() {
-        var pieceMoved = function (move) {
-                "use strict";
-                sendMessage(move)
-            };
-        var props = {
-                cssPath: '@routes.Assets.at("stylesheets/chess.css")',
-                pieceMovedCallback: pieceMoved,
-        };
-            
-        var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-        var chessSocket = new WS("@routes.Application.chess(username).webSocketURL()")
-    
-        var sendMessage = function(move) {
-        	console.log('sending message', move)
-        	json = JSON.stringify(move)
-        	console.log('json=', json)
-            chessSocket.send(json)
-        }
-        var receiveEvent = function(event) {
-             var data = JSON.parse(event.data)
-             
-             // Handle errors
-             if(data.error) {
-                 chessSocket.close()
-                 $("#onError span").text(data.error)
-                 $("#onError").show()
-                 return
-             } else {
-                 $("#onChat").show()
-             }
-             if(data.kind === 'game') {
-                 console.log('received message -', data.game);
-                 chessObj.loadGame(data.game, boardDiv);                	 
-             }
-             // Update the members list
-             $("#members").html('');
-             $(data.members).each(function() {
-                 $("#members").append('<li>' + this + '</li>');
-             })
-        }   
-        
-        chessObj = new window.DHTMLGoodies.ChessFen(props);
-        boardDiv = $('#' + 'chessBoard1')[0];
-        chessObj.init(boardDiv);
-        
-        chessSocket.onmessage = receiveEvent
-        
-        // TODO eliminate this kludge which waits for the webscocket to become ready for use
-        var timeout = window.setTimeout(function() {
-        	// TODO refactor so that a separate request is made to update the page
-            pieceMoved({ "from": 0, "to": 0 })
-        }, 500);
-        
-    });
+        $(function() {
+    	    new window.ChessMain.Chess("@routes.Application.chess(username).webSocketURL()").init()
+        });
     </script> 
     
     
