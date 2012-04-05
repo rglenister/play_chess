@@ -17,10 +17,13 @@ import com.codahale.jerkson.Json
 
 import chess.PieceType
 import chess.PieceType._
+import chess.PieceColor
+import chess.PieceColor._
 import chess.Game
 import chess.{Move, BasicMove, CastlingMove, EnPassantMove, PromotionMove}
 
 import chess.codec.FENEncoder
+import chess.format.MoveFormatter
 
 
 object ChessRoom {
@@ -41,7 +44,16 @@ object ChessRoom {
     JsObject(
       Seq(
         "fen" -> JsString(fenEncodeGame),
-        "movelist" -> JsArray(
+        "players" -> JsObject(
+          Seq(
+            "white" -> JsString(game.players(White).name),
+            "black" -> JsString(game.players(Black).name)
+          )
+        ),
+        "moveHistory" -> JsArray(
+          MoveFormatter().formatMoves(game).map { JsString(_) } toList
+        ),
+        "legalMoves" -> JsArray(
           ChessRoom.game.currentPosition.moveList.filter {
             _ match {
               case PromotionMove(_, _, _, promoteTo) if promoteTo != Queen => false 

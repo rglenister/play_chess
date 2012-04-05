@@ -52,7 +52,7 @@ class window.DHTMLGoodies.ChessFen
     @__squareToPieceMap[squareIndex]?
 
   __findTeachingSquares: (fromSquare) ->
-    moves = @__game.movelist.filter (move) -> move.from is fromSquare
+    moves = @__game.legalMoves.filter (move) -> move.from is fromSquare
     (move.to for move in moves).concat(
       move.enPassantCaptureSquare for move in moves.filter (move) -> move.enPassantCaptureSquare?)
     
@@ -97,7 +97,7 @@ class window.DHTMLGoodies.ChessFen
     false
     
   __createMove: (fromSquare, toSquare) ->
-    move = (@__game.movelist.filter (move) -> move.from is fromSquare and move.to is toSquare)[0]
+    move = (@__game.legalMoves.filter (move) -> move.from is fromSquare and move.to is toSquare)[0]
     if move then jQuery.extend(true, {}, move) else undefined
     
   __makeMove: (move) ->
