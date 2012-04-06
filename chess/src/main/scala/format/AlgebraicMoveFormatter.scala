@@ -14,11 +14,16 @@ import chess.PromotionMove
 
 
 /**
- * Formats moves in the standard algebraic format.
+ * Abstract class for algebraic move formatters.
  * 
  * @see http://en.wikipedia.org/wiki/Algebraic_chess_notation
  */
-class AlgebraicMoveFormatter extends MoveFormatter {
+abstract class AbstractAlgebraicMoveFormatter extends MoveFormatter {
+
+  protected[this] def getFromSquare(gameMove: GameMove): String
+  
+  protected[this] def getFromToSeparator(gameMove: GameMove): String
+
   override protected[this] def formatMove(gameMove: GameMove) = {
     gameMove.move match {
       case CastlingMove(_, _, boardSide) => (if (boardSide == Kingside) "O-O" else "O-O-O") + getResult(gameMove)
@@ -43,11 +48,36 @@ class AlgebraicMoveFormatter extends MoveFormatter {
     case piece => MoveFormatter.pieceCharToUnicode(piece.toChar).toString
   }
   
-  private def getFromSquare(gameMove: GameMove) = getMovedPiece(gameMove) match {
+  private def getToSquare(gameMove: GameMove) = Board.squareIndexToAlgebraic(gameMove.move.toSquare)
+  
+  private def getPromotionPiece(gameMove: GameMove) = gameMove.move match {
+    case PromotionMove(_, _, _, promoteTo) => MoveFormatter.pieceCharToUnicode(Piece(promoteTo, gameMove.position.sideToMove).toChar) 
+    case _ => ""
+  }
+  
+  private def getEnPassantIndicator(gameMove: GameMove) = gameMove.move match {
+    case EnPassantMove(_, _, _) => "e.p"
+    case _ => ""    
+  }
+    
+  private def getResult(gameMove: GameMove) = gameMove.nextPosition.gameStatus match {
+    case GameStatus.Checkmate => "#"
+    case _ => "+" * gameMove.nextPosition.checkCount
+  }
+}
+
+/**
+ * Standard algebraic move formatter.
+ */
+class AlgebraicMoveFormatter extends AbstractAlgebraicMoveFormatter {
+  
+  override protected def getFromSquare(gameMove: GameMove) = getMovedPiece(gameMove) match {
     case Piece(Pawn, _) => getFromSquareForPawn(gameMove)
     case _ => getFromSquareForPiece(gameMove)
   }
   
+  override protected def getFromToSeparator(gameMove: GameMove) = if (gameMove.move.isCapture) "x" else ""
+
   private def getFile(square: Int) = {
     Board.squareIndexToAlgebraic(square).head.toString
   }
@@ -77,23 +107,16 @@ class AlgebraicMoveFormatter extends MoveFormatter {
       }
     }
   }
-  
-  private def getFromToSeparator(gameMove: GameMove) = if (gameMove.move.isCapture) "x" else ""
+}
 
-  private def getToSquare(gameMove: GameMove) = Board.squareIndexToAlgebraic(gameMove.move.toSquare)
+/**
+ * Long algebraic move formatter.
+ */
+class LongAlgebraicMoveFormatter extends AbstractAlgebraicMoveFormatter {
   
-  private def getPromotionPiece(gameMove: GameMove) = gameMove.move match {
-    case PromotionMove(_, _, _, promoteTo) => MoveFormatter.pieceCharToUnicode(Piece(promoteTo, gameMove.position.sideToMove).toChar) 
-    case _ => ""
+  override protected[this] def getFromSquare(gameMove: GameMove) = {
+    Board.squareIndexToAlgebraic(gameMove.move.fromSquare)
   }
   
-  private def getEnPassantIndicator(gameMove: GameMove) = gameMove.move match {
-    case EnPassantMove(_, _, _) => "e.p"
-    case _ => ""    
-  }
-    
-  private def getResult(gameMove: GameMove) = gameMove.nextPosition.gameStatus match {
-    case GameStatus.Checkmate => "#"
-    case _ => "+" * gameMove.nextPosition.checkCount
-  }
+  override protected[this] def getFromToSeparator(gameMove: GameMove) = if (gameMove.move.isCapture) "x" else "-"
 }

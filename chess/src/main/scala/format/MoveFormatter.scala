@@ -14,7 +14,7 @@ import chess.Position
  */
 object MoveNotation extends Enumeration {
 
-  val Algebraic, ICCFNumeric = Value 
+  val Algebraic, LongAlgebraic, ICCFNumeric = Value 
 }
 
 import MoveNotation._
@@ -22,8 +22,9 @@ import MoveNotation._
 
 object MoveFormatter {
 
-  def apply(moveNotation: MoveNotation.Value = Algebraic) = moveNotation match {
+  def apply(moveNotation: MoveNotation.Value = LongAlgebraic) = moveNotation match {
     case Algebraic => new AlgebraicMoveFormatter
+    case LongAlgebraic => new LongAlgebraicMoveFormatter
     case ICCFNumeric => new ICCFNumericMoveFormatter
   }
   

@@ -6,6 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import chess.codec.FENEncoderSpec;
 import chess.format.AlgebraicMoveFormatterSpec;
+import chess.format.LongAlgebraicMoveFormatterSpec;
 import chess.format.ICCFNumericMoveFormatterSpec;
 
 
@@ -20,6 +21,7 @@ import chess.format.ICCFNumericMoveFormatterSpec;
 	GamePositionSpec.class,
 	GameSpec.class,
 	ICCFNumericMoveFormatterSpec.class,
+	LongAlgebraicMoveFormatterSpec.class,
 	PieceSquareNotifierSpec.class,
 	PositionSpec.class,
 	SquareAttackFinderSpec.class,
