@@ -19,12 +19,12 @@
             <ul id="members">
             </ul>
         </div>
-    <div id="dialog-select-promotion-piece" title="Promote to?">
+	</div>
+	
+    <div id="dialog-select-promotion-piece" title="Promote to?" style="display: none">
         <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Please select the promotion piece.</p>
     </div>
 
-	</div>
-	
     <script type="text/javascript">
         $(function() {
     	    new window.ChessMain.Chess("@routes.Application.chess(username).webSocketURL()").init()
