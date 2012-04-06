@@ -30,6 +30,9 @@ class window.ChessMain.Chess
     if data.kind is "game"
       console.log "received message -", data.game
       @chessObj.loadGame data.game, @boardDiv
+      $('#whitePlayerName').text(data.game.players.white)
+      $('#blackPlayerName').text(data.game.players.black)
+      $('#moveHistory').text(data.game.moveHistory.join(', '))
     $("#members").html ""
     $(data.members).each ->
       $("#members").append "<li>" + this + "</li>"
