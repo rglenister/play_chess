@@ -39,15 +39,29 @@ class window.ChessMain.Chess
     $("#members").html ""
     $(data.members).each ->
       $("#members").append "<li>" + this + "</li>"
-
-  newGame: =>
-    @sendMessage { action: 'newGame' } if confirm('Start a new game?')
     
   seekTo: (index) ->
     @sendMessage { action: 'setCurrentPosition', args: { positionIndex: index } }
-    
+
+  confirmNewGame: =>
+    newGame = =>
+      @sendMessage { action: 'newGame' }
+
+    $("#dialog-confirm-new-game").dialog({
+      resizable: false,
+      height:160,
+      modal: true,
+      buttons: {
+        "Yes": ->
+          $(this).dialog("close")
+          newGame()
+        Cancel: ->
+          $(this).dialog("close")
+      }
+    })
+  
   addButtonHandlers: ->
-    $('#newGameButton')[0].onclick = @newGame
+    $('#newGameButton')[0].onclick = @confirmNewGame
     $('#firstPositionButton')[0].onclick = => @seekTo 0
     $('#previousPositionButton')[0].onclick = => @seekTo @game.positionIndex - 1
     $('#nextPositionButton')[0].onclick = => @seekTo @game.positionIndex + 1
