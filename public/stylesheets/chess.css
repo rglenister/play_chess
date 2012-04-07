@@ -43,5 +43,10 @@
 }
 
 .chess-piece-teaching {
-	color: yellow
+	color: yellow;
+}
+
+.buttonPanel {
+	margin: 10px;
+	text-align: center;
 }

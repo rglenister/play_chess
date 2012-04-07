@@ -50,6 +50,7 @@ object ChessRoom {
             "black" -> JsString(game.players(Black).name)
           )
         ),
+        "positionIndex" -> JsNumber(game.nextMoveMapIndex),
         "moveHistory" -> JsArray(
           MoveFormatter().formatMoves(game).map { JsString(_) } toList
         ),
@@ -86,13 +87,21 @@ object ChessRoom {
       
         // Create an Iteratee to consume the feed
         val iteratee = Iteratee.foreach[JsValue] { event =>
-          val fromSquare = (event \ "from").as[Int]
-          val toSquare = (event \ "to").as[Int]
-          val promotionPiece = (event \ "promotionPiece").asOpt[String].flatMap { p: String =>
-            Some(p(0)) flatMap { PieceType.fromChar(_) }
+          val action = (event \ "action").as[String]
+          val argsOption = (event \ "args").as[Option[JsObject]]
+          action match {
+            case "makeMove" => {
+              val args = argsOption.get
+	          val fromSquare = (args \ "from").as[Int]
+	          val toSquare = (args \ "to").as[Int]
+	          val promotionPiece = (args \ "promotionPiece").asOpt[String].flatMap { p: String =>
+	            Some(p(0)) flatMap { PieceType.fromChar(_) }
+	          }
+              default ! MakeMove(username, fromSquare, toSquare, promotionPiece)          
+            }
+            case "newGame" => default ! NewGame(username)
+            case "setCurrentPosition" => default ! SetCurrentPosition(username, (argsOption.get \ "positionIndex").as[Int])
           }
-          println("promotionPiece=" + promotionPiece)
-          default ! MakeMove(username, fromSquare, toSquare, promotionPiece)
         }.mapDone { _ =>
           default ! Quit(username)
         }
@@ -139,10 +148,22 @@ class ChessRoom extends Actor {
       notifyAll("join", username, "has entered the room")
     }
     
+    case NewGame(username) => {
+      Logger.info("ChessRoom.receive NewGame")
+      ChessRoom.game = new Game()
+      notifyAll("game", username, "")      
+    }
+    
     case MakeMove(username, fromSquare, toSquare, promotionPiece) => {
       Logger.info("ChessRoom.receive MakeMove fromSquare=" + fromSquare + " toSquare=" + toSquare + " promotionPiece=" + promotionPiece)
       ChessRoom.game = ChessRoom.game.makeMove(fromSquare.toInt, toSquare.toInt, promotionPiece).getOrElse(ChessRoom.game)
       notifyAll("game", username, "")
+    }
+    
+    case SetCurrentPosition(username, index) => {
+      Logger.info("ChessRoom.receive SetCurrentPosition index=" + index)
+      ChessRoom.game = ChessRoom.game.setCurrentPosition(index).getOrElse(ChessRoom.game)
+      notifyAll("game", username, "")      
     }
     
     case Quit(username) => {
@@ -171,7 +192,10 @@ class ChessRoom extends Actor {
   
 }
 
+case class NewGame(username: String)
 case class MakeMove(username: String, fromSquare: Int, toSquare: Int, promotionPiece: Option[PieceType.Value])
+case class SetCurrentPosition(username: String, index: Int)
+
 case class Join(username: String)
 case class Quit(username: String)
 case class NotifyJoin(username: String)
