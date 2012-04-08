@@ -49,6 +49,12 @@
 .button-panel {
 	margin: 10px;
 	text-align: center;
+    font-size: larger;
+}
+
+.button-panel button {
+    padding-left:10px;
+	padding-right:10px;	
 }
 
 .player-panel {
@@ -71,13 +77,12 @@
     margin: 10px;
     border: 10px;
 	float: bottom;
-	max-height: 100px;
     overflow: auto;
 }
 
 .move-history span {
 	#width: 50%;
-    #float: left;
+    float: left;
     margin-right: 10px
 }
 
@@ -89,8 +94,8 @@
 	font-weight: bold;
 }
 
-.moveText {
-
+.moveText, .moveTextSelected {
+    white-space: nowrap;
 }
 
 .moveTextSelected {

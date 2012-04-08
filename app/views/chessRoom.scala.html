@@ -50,6 +50,10 @@
         <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The current game will be lost. Are you sure?</p>
     </div>
     
+    <div id="dialog-confirm-truncate-game" title="Truncate the game?" style="display: none">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The moves after the currently selected move will be lost. Are you sure?</p>
+    </div>
+    
     <script type="text/javascript">
         $(function() {
     	    new window.ChessMain.Chess("@routes.Application.chess(username).webSocketURL()").init()

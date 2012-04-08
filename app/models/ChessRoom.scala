@@ -99,6 +99,7 @@ object ChessRoom {
 	          }
               default ! MakeMove(username, fromSquare, toSquare, promotionPiece)          
             }
+            case "getGame" => default ! GetGame(username)
             case "newGame" => default ! NewGame(username)
             case "setCurrentPosition" => default ! SetCurrentPosition(username, (argsOption.get \ "positionIndex").as[Int])
           }
@@ -148,6 +149,11 @@ class ChessRoom extends Actor {
       notifyAll("join", username, "has entered the room")
     }
     
+    case GetGame(username) => {
+      Logger.info("ChessRoom.receive NewGame")
+      notifyAll("game", username, "")      
+    }
+    
     case NewGame(username) => {
       Logger.info("ChessRoom.receive NewGame")
       ChessRoom.game = new Game()
@@ -192,6 +198,7 @@ class ChessRoom extends Actor {
   
 }
 
+case class GetGame(username: String)
 case class NewGame(username: String)
 case class MakeMove(username: String, fromSquare: Int, toSquare: Int, promotionPiece: Option[PieceType.Value])
 case class SetCurrentPosition(username: String, index: Int)

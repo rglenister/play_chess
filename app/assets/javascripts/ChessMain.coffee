@@ -3,8 +3,6 @@ window.ChessMain = {}
 
 class window.ChessMain.Chess
   constructor: (webSocketURL) ->
-    @pieceMoved = (move) =>
-      @sendMessage { action: 'makeMove', args: move }    
     props = { pieceMovedCallback: @pieceMoved }
     @chessObj = new window.DHTMLGoodies.ChessFen(props)
     boardDiv = $("#chessBoard1")[0]
@@ -13,6 +11,31 @@ class window.ChessMain.Chess
     WS = (if window["MozWebSocket"] then MozWebSocket else WebSocket)
     @chessSocket = new WS(webSocketURL)
    
+  init: ->    
+    @chessSocket.onmessage = @receiveEvent  
+    timeout = window.setTimeout(=>
+      @sendGetGameMessage()
+    , 500)
+  
+  pieceMoved: (move) =>
+    if @game?
+      if @game.positionIndex == @game.moveHistory.length 
+        @sendPieceMovedMessage move
+      else
+        @confirmTruncateGame => @sendPieceMovedMessage move
+        
+  sendPieceMovedMessage: (move) ->
+    @sendMessage { action: 'makeMove', args: move }
+        
+  sendGetGameMessage: =>
+    @sendMessage { action: 'getGame' }
+
+  sendNewGameMessage: =>
+    @sendMessage { action: 'newGame' }
+
+  sendSeekToMessage: (index) ->
+    @sendMessage { action: 'setCurrentPosition', args: { positionIndex: index } }
+
   sendMessage: (message) ->
     console.log "sending message", message
     json = JSON.stringify(message)
@@ -39,14 +62,8 @@ class window.ChessMain.Chess
     $("#members").html ""
     $(data.members).each ->
       $("#members").append "<li>" + this + "</li>"
-    
-  seekTo: (index) ->
-    @sendMessage { action: 'setCurrentPosition', args: { positionIndex: index } }
 
-  confirmNewGame: =>
-    newGame = =>
-      @sendMessage { action: 'newGame' }
-
+  confirmNewGame: (newGame) ->
     $("#dialog-confirm-new-game").dialog({
       resizable: false,
       height:160,
@@ -60,21 +77,27 @@ class window.ChessMain.Chess
       }
     })
   
-  addButtonHandlers: ->
-    $('#newGameButton')[0].onclick = @confirmNewGame
-    $('#firstPositionButton')[0].onclick = => @seekTo 0
-    $('#previousPositionButton')[0].onclick = => @seekTo @game.positionIndex - 1
-    $('#nextPositionButton')[0].onclick = => @seekTo @game.positionIndex + 1
-    $('#lastPositionButton')[0].onclick = => @seekTo @game.moveHistory.length
-    
-  init: ->    
-    @chessSocket.onmessage = @receiveEvent  
-    timeout = window.setTimeout(=>
-      @pieceMoved
-        from: 0
-        to: 0
-    , 500)
+  confirmTruncateGame: (makeMove) ->
+    $("#dialog-confirm-truncate-game").dialog({
+      resizable: false,
+      height:160,
+      modal: true,
+      buttons: {
+        "Yes": ->
+          $(this).dialog("close")
+          makeMove()
+        Cancel: ->
+          $(this).dialog("close")
+      }
+    })
   
+  addButtonHandlers: ->
+    $('#newGameButton')[0].onclick = => @confirmNewGame @sendNewGameMessage
+    $('#firstPositionButton')[0].onclick = => @sendSeekToMessage 0
+    $('#previousPositionButton')[0].onclick = => @sendSeekToMessage @game.positionIndex - 1
+    $('#nextPositionButton')[0].onclick = => @sendSeekToMessage @game.positionIndex + 1
+    $('#lastPositionButton')[0].onclick = => @sendSeekToMessage @game.moveHistory.length
+    
   generateMoveHistory: (moveHistory) ->
     $('#moveHistory').html('')
     moveHistoryEl = $('#moveHistory')[0]
@@ -86,17 +109,19 @@ class window.ChessMain.Chess
         moveNumberEl.appendChild(document.createTextNode('' + (index / 2 + 1) + '.'))
         rootEl.appendChild(moveNumberEl)
       moveEl = document.createElement('span')
-      moveEl.setAttribute('class', 'moveText') 
+      if index == @game.positionIndex - 1
+        moveEl.setAttribute('class', 'moveTextSelected')  
+      else
+        moveEl.setAttribute('class', 'moveText') 
       moveEl.appendChild(document.createTextNode(move))
       moveEl.id = 'move' + index
-      if index == @game.positionIndex
-        moveEl.setAttribute('class', 'moveTextSelected')       
+     
       moveEl.onmousedown = @onMoveClicked.bind(this)
       rootEl.appendChild(moveEl)
       moveHistoryEl.appendChild(rootEl)
 
   onMoveClicked: (event) ->
     moveNumber = event.currentTarget.id.substr(4)
-    @seekTo parseInt(moveNumber)
+    @sendSeekToMessage parseInt(moveNumber) + 1
     
     
