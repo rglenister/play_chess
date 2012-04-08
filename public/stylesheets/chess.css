@@ -1,4 +1,4 @@
-/* Css rules for the board */
+/* Css rules for the chess application */
 .chess-board-inner {
 	width: 360px;
 	height: 360px;
@@ -46,7 +46,53 @@
 	color: yellow;
 }
 
-.buttonPanel {
+.button-panel {
 	margin: 10px;
 	text-align: center;
+}
+
+.player-panel {
+    margin: 10px;
+    border: 10px;
+    background-color: #fc9;
+    width: 100%;	
+    height: 100%;
+    overflow: hidden;
+    align: bottom;
+}
+
+.player-panel div {
+	width: 50%;
+    text-align: center;
+	float: left;
+}
+
+.move-history {
+    margin: 10px;
+    border: 10px;
+	float: bottom;
+	max-height: 100px;
+    overflow: auto;
+}
+
+.move-history span {
+	#width: 50%;
+    #float: left;
+    margin-right: 10px
+}
+
+.moveNumber, .moveText, .moveTextSelected {
+	font-size: larger;
+}
+
+.moveNumber {
+	font-weight: bold;
+}
+
+.moveText {
+
+}
+
+.moveTextSelected {
+    background-color: yellow;
 }

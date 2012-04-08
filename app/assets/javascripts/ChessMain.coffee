@@ -34,7 +34,7 @@ class window.ChessMain.Chess
       @chessObj.loadGame data.game, @boardDiv
       $('#whitePlayerName').text(data.game.players.white)
       $('#blackPlayerName').text(data.game.players.black)
-      $('#moveHistory').text(data.game.moveHistory.join(', '))
+      @generateMoveHistory(data.game.moveHistory)
       
     $("#members").html ""
     $(data.members).each ->
@@ -75,3 +75,28 @@ class window.ChessMain.Chess
         to: 0
     , 500)
   
+  generateMoveHistory: (moveHistory) ->
+    $('#moveHistory').html('')
+    moveHistoryEl = $('#moveHistory')[0]
+    for move, index in moveHistory
+      rootEl = document.createElement('span')
+      if index % 2 == 0
+        moveNumberEl = document.createElement('span')
+        moveNumberEl.setAttribute('class', 'moveNumber')
+        moveNumberEl.appendChild(document.createTextNode('' + (index / 2 + 1) + '.'))
+        rootEl.appendChild(moveNumberEl)
+      moveEl = document.createElement('span')
+      moveEl.setAttribute('class', 'moveText') 
+      moveEl.appendChild(document.createTextNode(move))
+      moveEl.id = 'move' + index
+      if index == @game.positionIndex
+        moveEl.setAttribute('class', 'moveTextSelected')       
+      moveEl.onmousedown = @onMoveClicked.bind(this)
+      rootEl.appendChild(moveEl)
+      moveHistoryEl.appendChild(rootEl)
+
+  onMoveClicked: (event) ->
+    moveNumber = event.currentTarget.id.substr(4)
+    @seekTo parseInt(moveNumber)
+    
+    

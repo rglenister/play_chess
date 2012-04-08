@@ -15,7 +15,7 @@
     <div id="onChess" class="row">
         <div class='span7'>
             <div id="chessBoard1"></div>
-            <div class='buttonPanel'>
+            <div class='button-panel'>
                 <button type="button" id='newGameButton'>New Game</button>
                 <button type="button" id='firstPositionButton'>&lt;&lt;</button>
                 <button type="button" id='previousPositionButton'>&lt;</button>
@@ -28,15 +28,16 @@
 	            </ul>
 	        </div>
         </div>  
-        <div class="span4" bgColor='yellow'>
-            <div>
-	            <h2>Players</h2>
-	            <h3 id="whitePlayerName" width="50%"></h3>
-	            <h3 id="blackPlayerName" width="50%"></h3>
+        <div class="span7">
+            <div class='player-panel'>
+	            <div>
+	                <h3 id="whitePlayerName"></h3>
+	            </div>
+	            <div>
+	                <h3 id="blackPlayerName"></h3>
+	            </div>            
             </div>
-            <div>
-                <h2>Move List</h2>
-                <span id="moveHistory" />
+            <div class='move-history' id='moveHistory'>
             </div>
         </div>
 	</div>
