@@ -101,11 +101,7 @@ class window.DHTMLGoodies.ChessFen
     if move then jQuery.extend(true, {}, move) else undefined
     
   __makeMove: (move) ->
-    if !move.isPromotion
-      @pieceMovedCallback move
-    else
-      @__makePromotionMove(move, =>
-        @pieceMovedCallback move)
+    if !move.isPromotion then @pieceMovedCallback move else @__makePromotionMove(move)
       
   init: (element) ->
     element.innerHTML = ''
@@ -227,7 +223,8 @@ class window.DHTMLGoodies.ChessFen
       rank.className = 'chess-board-label'
       no_++
 
-  __makePromotionMove: (move, makeMove) ->
+  __makePromotionMove: (move) ->
+    that = this
     $("#dialog-select-promotion-piece").dialog({
       resizable: false,
       height:140,
@@ -241,7 +238,7 @@ class window.DHTMLGoodies.ChessFen
       click: -> 
         $(this).dialog("close")
         move.promotionPiece = pieces[i]
-        makeMove()
+        that.pieceMovedCallback(move)
     })  
     $("#dialog-select-promotion-piece").dialog('option', 'buttons', buttons)
   
