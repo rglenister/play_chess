@@ -22,7 +22,7 @@ import MoveNotation._
 
 object MoveFormatter {
 
-  def apply(moveNotation: MoveNotation.Value = LongAlgebraic) = moveNotation match {
+  def apply(moveNotation: MoveNotation.Value = Algebraic) = moveNotation match {
     case Algebraic => new AlgebraicMoveFormatter
     case LongAlgebraic => new LongAlgebraicMoveFormatter
     case ICCFNumeric => new ICCFNumericMoveFormatter

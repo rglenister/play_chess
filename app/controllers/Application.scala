@@ -26,7 +26,7 @@ object Application extends Controller {
    */
   def chessRoom(username: Option[String]) = Action { implicit request =>
     username.filterNot(_.isEmpty).map { username =>
-      Ok(views.html.chessRoom(username, ChessRoom.encodeGame.toString()))
+      Ok(views.html.chessRoom(username, JsonGameSerializer.serializeFrontEnd(DB.get).toString()))
     }.getOrElse {
       Redirect(routes.Application.index).flashing(
         "error" -> "Please choose a valid username."
