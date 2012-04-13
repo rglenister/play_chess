@@ -5,7 +5,7 @@ import scala.math.BigDecimal.int2bigDecimal
 import chess.PieceColor.Black
 import chess.PieceColor.White
 import chess.PieceType.Queen
-import chess.codec.FENEncoder
+import chess.codec.FENSerializer
 import chess.format.MoveFormatter
 import chess.BasicMove
 import chess.CastlingMove
@@ -66,7 +66,7 @@ object JsonGameSerializer {
     ).toString
   }
   
-  private def encodeFEN(game: Game) = "fen" -> JsString(FENEncoder(game.currentPosition).encode)
+  private def encodeFEN(game: Game) = "fen" -> JsString(FENSerializer(game.currentPosition).encode)
   
   private def serializePlayers(game: Game) = {
     "players" -> JsObject(

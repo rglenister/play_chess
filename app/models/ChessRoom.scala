@@ -16,7 +16,6 @@ import chess.PieceColor
 import chess.PieceColor._
 import chess.Game
 import chess.{Move, BasicMove, CastlingMove, EnPassantMove, PromotionMove}
-import chess.codec.FENEncoder
 import chess.format.MoveFormatter
 
 
