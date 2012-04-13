@@ -87,6 +87,11 @@ trait Position {
   def fiftyMoveRuleCount: Int
   
   /**
+   * @return the full move number.
+   */
+  def fullMoveNumber: Int
+  
+  /**
    * @return a list of all previous positions in reverse chronological order.
    */
   def previousPositions: List[Position]
@@ -140,6 +145,7 @@ object GamePosition {
     castlingRightsMap: Map[PieceColor.Value, CastlingRights],
     enPassantSquare: Option[Int] = None,
     fiftyMoveRuleCount: Int = 0,
+    fullMoveNumber: Int = 1,
     previousPositions: List[Position] = List()      
   ): GamePosition = {
     new GamePosition(
@@ -148,6 +154,7 @@ object GamePosition {
       castlingRightsMap: Map[PieceColor.Value, CastlingRights],
       enPassantSquare: Option[Int],
       fiftyMoveRuleCount,
+      fullMoveNumber,
       previousPositions      
     )
   }
@@ -167,6 +174,7 @@ object GamePosition {
       CastlingRights.next(squareToPieceMap, previousPosition.castlingRightsMap),
       createEnPassantSquare(previousPosition, move),
       createFiftyMoveRuleCount(previousPosition, move),
+      previousPosition.fullMoveNumber + (if (previousPosition.opposingSide == White) 1 else 0),
       previousPosition :: previousPosition.previousPositions
     )
     if (!SquareAttackFinder.isSquareAttacked(position, position.getKingSquare(position.opposingSide), position.sideToMove)) {
@@ -218,6 +226,7 @@ object GamePosition {
  * @param castlingRightsMap contains the castling rights for each player.
  * @param enPassantSquare is the destination square of the last move if it was a double square move by a pawn otherwise None.
  * @param fiftyMoveRuleCount is the count of half moves in accordance with the fifty move rule.
+ * @param fullMoveNumber is the full move move number.
  * @param previousPositions contains all previous game positions.
  */
 class GamePosition(
@@ -226,6 +235,7 @@ class GamePosition(
     val castlingRightsMap: Map[PieceColor.Value, CastlingRights],
     val enPassantSquare: Option[Int],
     val fiftyMoveRuleCount: Int,
+    val fullMoveNumber: Int,
     val previousPositions: List[Position]
     ) extends Position {
 

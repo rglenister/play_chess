@@ -4,7 +4,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import chess.codec.FENEncoderSpec;
+import chess.codec.FENSerializerSpec;
+import chess.codec.FENParserSpec;
 import chess.format.AlgebraicMoveFormatterSpec;
 import chess.format.LongAlgebraicMoveFormatterSpec;
 import chess.format.ICCFNumericMoveFormatterSpec;
@@ -17,7 +18,8 @@ import chess.format.ICCFNumericMoveFormatterSpec;
 	CastlingMetadataSpec.class,
 	CastlingRightsSpec.class,
 	DynamicMoveGeneratorSpec.class,
-	FENEncoderSpec.class,
+	FENSerializerSpec.class,
+	FENParserSpec.class,
 	GamePositionSpec.class,
 	GameSpec.class,
 	ICCFNumericMoveFormatterSpec.class,

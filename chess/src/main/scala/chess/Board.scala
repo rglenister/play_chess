@@ -25,7 +25,7 @@ object PieceType extends Enumeration {
   def fromChar(p: Char): Option[PieceType.Value] = {
     val up = p.toUpper
     if (up=='N') Some(Knight)
-    else values find { _.toString.head == up }
+    else values filter(_ != Knight) find { _.toString.head == up }
   }
 }
 
@@ -35,7 +35,18 @@ object PieceType extends Enumeration {
 object PieceColor extends Enumeration {
   val White, Black = Value
   
+  def apply(ch: Char) = if (ch.toLower == 'w') Some(White) else if (ch.toLower == 'b') Some(Black) else None
+  
   def otherColor(color: Value) = PieceColor(1 - color.id)
+}
+
+import PieceType._
+import PieceColor._
+
+object Piece {
+  def apply(ch: Char): Piece = {
+    Piece(PieceType.fromChar(ch).get, if (ch.isUpper) White else Black)
+  }
 }
 
 case class Piece(pieceType:PieceType.Value, pieceColor:PieceColor.Value) {
@@ -60,8 +71,6 @@ object BoardSide extends Enumeration {
 }
 
 
-import PieceColor._
-import PieceType._
 import BoardSide._
 
 
@@ -145,12 +154,24 @@ object Board {
       52 -> Piece(Pawn, Black), 53 -> Piece(Pawn, Black), 54 -> Piece(Pawn, Black), 55 -> Piece(Pawn, Black))
   }
   
+  /**
+   * Converts algebraic square to its square index.
+   * 
+   * @param algebraic identifies the square e.g. "e4"
+   * @return 
+   */
   def algebraicToSquareIndex(algebraic: String): Int = {
     val Algebraic = """^([a-hA-H])([1-8])$""".r
     val Algebraic(letter, digit) = algebraic
     8 * (digit.toInt-1) + (7 - ('h' - letter(0)))
   }
   
+  /**
+   * Converts a square index to algebraic notation.
+   * 
+   * @param square is the square index.
+   * @return the square in algebraic notation.
+   */
   def squareIndexToAlgebraic(square: Int) = {
     "%c%d".format('a' + column(square), row(square) + 1)
   }

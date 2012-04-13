@@ -89,6 +89,7 @@ class PositionSpec extends FlatSpec with EasyMockSugar with ShouldMatchers {
     val castlingRightsMap: Map[PieceColor.Value, CastlingRights] = Map(),
     val enPassantSquare: Option[Int] = None,
     val fiftyMoveRuleCount: Int = 0,
+    val fullMoveNumber: Int = 1,
     val previousPositions: List[Position] = Nil) extends Position {
   }
 }
@@ -103,6 +104,8 @@ class GamePositionSpec extends FlatSpec with ShouldMatchers {
     gamePosition.sideToMove should equal (White)
     gamePosition.castlingRightsMap(White) should equal (CastlingRights(false, Map(Kingside -> false, Queenside -> false)))
     gamePosition.castlingRightsMap(Black) should equal (CastlingRights(false, Map(Kingside -> false, Queenside -> false)))
+    gamePosition.fiftyMoveRuleCount should equal (0)
+    gamePosition.fullMoveNumber should equal (1)
     gamePosition.repetitionOfPositionCount should equal (0)
     gamePosition.enPassantSquare should equal (None)
     gamePosition.isCheck should equal (false)

@@ -155,5 +155,21 @@ class CastlingRightsSpec extends FlatSpec with ShouldMatchers {
     castlingRights(Black).canCastle(Kingside) should equal (false)
     castlingRights(Black).canCastle(Queenside) should equal (false)
   }
+
+  it should "be all false when initialized from an empty FEN" in {
+    val castlingRights = CastlingRights.create("-")
+    castlingRights(White).canCastle(Kingside) should equal (false)
+    castlingRights(White).canCastle(Queenside) should equal (false)
+    castlingRights(Black).canCastle(Kingside) should equal (false)
+    castlingRights(Black).canCastle(Queenside) should equal (false)
+  }
+
+  it should "be all true when initialized from a FEN that includes full castling rights for both sides" in {
+    val castlingRights = CastlingRights.create("KQkq")
+    castlingRights(White).canCastle(Kingside) should equal (true)
+    castlingRights(White).canCastle(Queenside) should equal (true)
+    castlingRights(Black).canCastle(Kingside) should equal (true)
+    castlingRights(Black).canCastle(Queenside) should equal (true)
+  }
 }  
   

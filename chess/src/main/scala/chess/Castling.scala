@@ -9,8 +9,8 @@ import BoardSide._
  */
 object CastlingRights {
 
-  private val newGameCastlingRights: CastlingRights = CastlingRights(false, Map(Kingside -> false, Queenside -> false))
-  private val newGameCastlingRightsMap = Map(White -> newGameCastlingRights, Black -> newGameCastlingRights)
+  private val newGameCastlingRights = CastlingRights(false, Map(Kingside -> false, Queenside -> false))
+  private val newGameCastlingRightsMap = create(newGameCastlingRights, newGameCastlingRights)
   
   /**
    * Creates a map containing the castling rights of both players.
@@ -22,6 +22,29 @@ object CastlingRights {
    */
   def create(squareToPieceMap: Map[Int, Piece]): Map[PieceColor.Value, CastlingRights] = {
     next(squareToPieceMap, newGameCastlingRightsMap)
+  }
+  
+  /**
+   * Creates a castling rights map.
+   * 
+   * @param white is whites castling rights.
+   * @param black is blacks castling rights.
+   * @return a map containing the given castling rights.
+   */
+  def create(white: CastlingRights, black: CastlingRights): Map[PieceColor.Value, CastlingRights] = {
+    Map(White -> white, Black -> black)
+  }
+  
+  /**
+   * Creates a castling rights map.
+   * 
+   * @param fen is a FEN fragment containing the white and black castling rights.
+   * @return a map containing the castling rights from the given fen fragment.
+   */
+  def create(fen: String): Map[PieceColor.Value, CastlingRights] = {
+    val white = CastlingRights(false, Map(Kingside -> !fen.contains("K"), Queenside -> !fen.contains("Q")))
+    val black = CastlingRights(false, Map(Kingside -> !fen.contains("k"), Queenside -> !fen.contains("q")))
+    create(white, black)
   }
   
   /**
