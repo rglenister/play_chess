@@ -89,6 +89,8 @@ class FENSerializer(val position: Position) {
  */
 object FENParser {
   
+  private val FenRegEx = """([pnbrqkPNBRQK12345678/]+) ([wb]) (K?Q?k?q?-?) ([a-e][1-8]|-) (\d+) (\d+)""".r
+  
   /**
    * Creates a position from the given FEN.
    * 
@@ -96,7 +98,6 @@ object FENParser {
    * @return the position representing the given fen.
    */
   def parse(fen: String): GamePosition = {
-    val FenRegEx = """([pnbrqkPNBRQK12345678/]+) ([wb]) (K?Q?k?q?-?) ([a-e][1-8]|-) (\d+) (\d+)""".r
     val FenRegEx(fenBoard, fenSideToMove, fenCastlingAvailability, fenEnPassantSquare, fenHalfmoveClock, fenFullMoveNumber) = fen
     val sideToMove = PieceColor(fenSideToMove.head).get
     GamePosition(

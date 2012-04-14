@@ -79,8 +79,8 @@ trait Position {
    * @param color is the color of the king.
    * @return the index of the square containing the king.
    */
-  def getKingSquare(color: PieceColor.Value): Int = pieceToSquaresMap(Piece(King, color)).head 
-  
+  def getKingSquare(color: PieceColor.Value): Int = squareToPieceMap.find(_._2 == Piece(King, color)).get._1 
+
   /**
    * @return the count of half moves since the last irreversible move was made in accordance with the 50 move rule.
    */

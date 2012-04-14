@@ -9,6 +9,7 @@ import chess.codec.FENParserSpec;
 import chess.format.AlgebraicMoveFormatterSpec;
 import chess.format.LongAlgebraicMoveFormatterSpec;
 import chess.format.ICCFNumericMoveFormatterSpec;
+import chess.search.SearchSpec;
 
 
 @RunWith(Suite.class)
@@ -27,7 +28,8 @@ import chess.format.ICCFNumericMoveFormatterSpec;
 	PieceSquareNotifierSpec.class,
 	PositionSpec.class,
 	SquareAttackFinderSpec.class,
-	StaticMoveGeneratorSpec.class
+	StaticMoveGeneratorSpec.class,
+	SearchSpec.class
 })
 public class AllTests { 
 
