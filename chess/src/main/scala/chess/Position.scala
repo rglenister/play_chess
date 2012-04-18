@@ -278,16 +278,11 @@ class GamePosition(
   def canEqual(other: Any) = other.isInstanceOf[GamePosition]
   
   override def toString = {
-    import implicits._
-    def piece(square: Int): Int = if (isEmpty(square)) 0 else squareToPieceMap(square)
-    var result = ""
-    for (row <- 7 to 0 by -1) {
-      for (col <- 0 to 7) {
-    	result += "%2d ".format(piece(row*8+col))
-      }
-      result += "\n"
+    (7 to 0 by -1).foldLeft("") { (resultString, row) =>
+      resultString + (0 to 7).foldLeft("") { (rowString, col) =>
+    	rowString + "%s ".format(squareToPieceMap.get(row*8+col).map { _.toChar.toString } getOrElse("-"))
+      } + "\n"
     }
-    result
   }
   
   /**
