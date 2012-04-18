@@ -10,5 +10,6 @@ libraryDependencies ++= Seq(
   "org.easymock" % "easymock" % "3.1",
   "org.scalamock" %% "scalamock-scalatest-support" % "latest.integration",
   "org.scalatest" %% "scalatest" % "1.7.1" % "test",
-  "org.objenesis" % "objenesis" % "1.2"
+  "org.objenesis" % "objenesis" % "1.2",
+  "log4j" % "log4j" % "1.2.16"
 )
