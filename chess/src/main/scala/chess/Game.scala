@@ -21,6 +21,10 @@ case class GameMove( move: Move, position: Position, nextPosition: Position)
 object Game {
   
   private val defaultPlayersMap = Map(White -> Player("White Player"), Black -> Player("Black Player"))
+  
+  def apply(position: Position, moves: List[Move]): Game = {
+    moves.foldLeft(new Game(position)) { (game, move) => game.makeMove(move).get }
+  }
 }
 
 /**

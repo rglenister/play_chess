@@ -3,9 +3,14 @@ package chess.search
 import chess.Position
 import chess.Move
 import chess.BasicMove
+import chess.Game
 import chess.GamePosition
 import chess.GameStatus._
 import chess.PieceColor._
+import chess.format.MoveFormatter
+import chess.format.MoveNotation._
+import java.io.PrintStream
+import org.apache.log4j._
 
 
 /**
@@ -26,6 +31,11 @@ case class SearchResults(score: Int, bestLine: List[Move]) extends Ordered[Searc
  * Brute force full width search. 
  */
 object Search {
+  
+  val logger = Logger.getLogger(getClass)
+  logger.addAppender(new ConsoleAppender(new PatternLayout()))
+  
+  var nodeCountTimer = new NodeCountTimer
 
   /** The maximum possible score */
   val MaxScore = 10000
@@ -38,10 +48,14 @@ object Search {
    * @return the search results.
    */
   def search(position: Position, maxDepth: Int): SearchResults = {
-    -doSearch(position, List(), 0, maxDepth)
+    nodeCountTimer = new NodeCountTimer
+    val searchResults = -doSearch(position, List(), 0, maxDepth)
+    logger.info("score: %d, formattedMoves: %s, nodeCountTimer: %s".format(searchResults.score, MoveFormatter(LongAlgebraic).formatMoves(Game(position, searchResults.bestLine)), nodeCountTimer))
+    searchResults
   }
   
   private def doSearch(position: Position, moves: List[Move], depth: Int, maxDepth: Int): SearchResults = {
+    nodeCountTimer.increment
     val score = scorePosition(position, depth)
     if (score != 0 || depth == maxDepth || position.gameStatus != InProgress) {
       SearchResults(score, moves.reverse)
@@ -59,4 +73,18 @@ object Search {
       0
     } * (if (position.sideToMove == White) 1 else -1)
   }
+}
+
+class Timer {
+  val startTime = System.currentTimeMillis
+  lazy val ellapsedTimeMillis = System.currentTimeMillis - startTime
+}
+
+class NodeCountTimer {
+  val timer = new Timer
+  var nodeCount = 0L
+ 
+  def increment { nodeCount += 1 }
+  
+  override def toString = "%d nodes in %1.3f seconds (%d nps)".format(nodeCount, timer.ellapsedTimeMillis / 1000.0, nodeCount * 1000 / timer.ellapsedTimeMillis)
 }

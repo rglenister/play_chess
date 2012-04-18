@@ -64,6 +64,19 @@ class SearchSpec extends FlatSpec with ShouldMatchers {
 	val searchResults = Search.search(gamePosition, maxDepth) should equal (
 	  SearchResults(9997,List(BasicMove(12,30,false), BasicMove(42,34,false), BasicMove(26,34,true))))
   }
-    
   
+  "The Search" should "solve a mate in three (1)" in {
+	val gamePosition = FENParser.parse("4bB1k/6nr/5N2/4N3/8/8/8/K5R1 w - - 0 1")
+	val maxDepth = 5
+	val searchResults = Search.search(gamePosition, maxDepth) should equal (
+	  SearchResults(9995,List(BasicMove(0,1,false), BasicMove(60,39,false), BasicMove(6,46,false), BasicMove(54,60,false),
+	                BasicMove(46,62,false))))
+  }
+  
+//  "The Search" should "solve a mate in three (2)" in {
+//	val gamePosition = FENParser.parse("1bkr3r/pp1n1ppp/2q1pnb1/1N6/2BP1B2/5Q2/PPP3PP/4RR1K w - - 0 1")
+//	val maxDepth = 5
+//	val searchResults = Search.search(gamePosition, maxDepth) should equal (
+//	  SearchResults(9995,List(BasicMove(12,30,false), BasicMove(42,34,false), BasicMove(26,34,true))))
+//  }
 }
