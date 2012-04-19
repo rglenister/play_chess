@@ -1,5 +1,8 @@
 package chess
 
+
+import scala.PartialFunction
+
 import PieceType._
 import PieceColor._
 import BoardSide._
@@ -186,22 +189,31 @@ object GamePosition {
     nextSquareToPieceMap - fromSquare + (toSquare -> nextSquareToPieceMap(fromSquare))
   }
   
-  private def createSquareToPieceMap(previousPosition: Position, move: Move) = {
-    var squareToPieceMap = movePiece(previousPosition.squareToPieceMap, move.fromSquare, move.toSquare)
-    move match {
-      case EnPassantMove(fromSquare, toSquare, captureSquare) => {
-        squareToPieceMap = squareToPieceMap - previousPosition.enPassantSquare.get 
-      }
-      case CastlingMove(fromSquare, toSquare, boardSide) => {
+  private def createSquareToPieceMap(previousPosition: Position, move: Move): Map[Int, Piece] = {
+    
+    val enPassantMove: PartialFunction[Move, Map[Int, Piece] => Map[Int, Piece]] = {
+      case enPassantMove: EnPassantMove => { squareToPieceMap => squareToPieceMap - previousPosition.enPassantSquare.get }
+    }
+    
+    val castlingMove: PartialFunction[Move, Map[Int, Piece] => Map[Int, Piece]] = {
+      case CastlingMove(_, _, boardSide) => { squareToPieceMap =>
         val metadata = CastlingMetadata.get(previousPosition.sideToMove)(boardSide)
-        squareToPieceMap = movePiece(squareToPieceMap, metadata.rookFromSquare, metadata.rookToSquare) 
+        movePiece(squareToPieceMap, metadata.rookFromSquare, metadata.rookToSquare)
       }
-      case PromotionMove(fromSquare, toSquare, isCapture, toPiece) => {
-        squareToPieceMap = squareToPieceMap + (toSquare -> Piece(toPiece, previousPosition.sideToMove)) 
+    }
+    
+    val promotionMove: PartialFunction[Move, Map[Int, Piece] => Map[Int, Piece]] = {
+      case PromotionMove(_, toSquare, _, toPiece) => { squareToPieceMap =>
+        squareToPieceMap + (toSquare -> Piece(toPiece, previousPosition.sideToMove)) 
       }
-      case BasicMove(fromSquare, toSquare, isCapture) =>
-    }    	
-    squareToPieceMap
+    }
+    
+    val basicMove: PartialFunction[Move, Map[Int, Piece] => Map[Int, Piece]] = {
+      case basicMove: BasicMove => { squareToPieceMap => squareToPieceMap }
+    }
+    
+    (enPassantMove orElse castlingMove orElse promotionMove orElse basicMove)(move)(
+      movePiece(previousPosition.squareToPieceMap, move.fromSquare, move.toSquare))
   }
   
   private def createEnPassantSquare(previousPosition: Position, move: Move): Option[Int] = {
