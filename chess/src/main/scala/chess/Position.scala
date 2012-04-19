@@ -185,35 +185,23 @@ object GamePosition {
     } else None
   }
 
-  private def movePiece(nextSquareToPieceMap: Map[Int, Piece], fromSquare: Int, toSquare: Int): Map[Int, Piece] = {
+  private def movePiece(fromSquare: Int, toSquare: Int)(nextSquareToPieceMap: Map[Int, Piece]): Map[Int, Piece] = {
     nextSquareToPieceMap - fromSquare + (toSquare -> nextSquareToPieceMap(fromSquare))
   }
   
   private def createSquareToPieceMap(previousPosition: Position, move: Move): Map[Int, Piece] = {
     
-    val enPassantMove: PartialFunction[Move, Map[Int, Piece] => Map[Int, Piece]] = {
-      case enPassantMove: EnPassantMove => { squareToPieceMap => squareToPieceMap - previousPosition.enPassantSquare.get }
-    }
-    
-    val castlingMove: PartialFunction[Move, Map[Int, Piece] => Map[Int, Piece]] = {
-      case CastlingMove(_, _, boardSide) => { squareToPieceMap =>
+    val update1: Map[Int, Piece] => Map[Int, Piece] = movePiece(move.fromSquare, move.toSquare)(_)
+    val update2: Map[Int, Piece] => Map[Int, Piece] = move match {
+      case basicMove: BasicMove => { squareToPieceMap => squareToPieceMap } 
+      case enPassantMove: EnPassantMove => { _ - previousPosition.enPassantSquare.get }      
+      case PromotionMove(_, toSquare, _, toPiece) => { _ + (toSquare -> Piece(toPiece, previousPosition.sideToMove)) }
+      case CastlingMove(_, _, boardSide) => {
         val metadata = CastlingMetadata.get(previousPosition.sideToMove)(boardSide)
-        movePiece(squareToPieceMap, metadata.rookFromSquare, metadata.rookToSquare)
+        movePiece(metadata.rookFromSquare, metadata.rookToSquare)(_)
       }
     }
-    
-    val promotionMove: PartialFunction[Move, Map[Int, Piece] => Map[Int, Piece]] = {
-      case PromotionMove(_, toSquare, _, toPiece) => { squareToPieceMap =>
-        squareToPieceMap + (toSquare -> Piece(toPiece, previousPosition.sideToMove)) 
-      }
-    }
-    
-    val basicMove: PartialFunction[Move, Map[Int, Piece] => Map[Int, Piece]] = {
-      case basicMove: BasicMove => { squareToPieceMap => squareToPieceMap }
-    }
-    
-    (enPassantMove orElse castlingMove orElse promotionMove orElse basicMove)(move)(
-      movePiece(previousPosition.squareToPieceMap, move.fromSquare, move.toSquare))
+    (update1 andThen update2)(previousPosition.squareToPieceMap)   
   }
   
   private def createEnPassantSquare(previousPosition: Position, move: Move): Option[Int] = {

@@ -114,19 +114,19 @@ class GamePositionSpec extends FlatSpec with ShouldMatchers {
   }
 
   it should "checkmate when the side to move cannot get out of check" in {
-    var gamePosition = GamePosition()
-    gamePosition = GamePosition(gamePosition, getMove(gamePosition, "f2 f3")).get
-    gamePosition = GamePosition(gamePosition, getMove(gamePosition, "e7 e5")).get
-    gamePosition = GamePosition(gamePosition, getMove(gamePosition, "g2 g4")).get
-    gamePosition = GamePosition(gamePosition, getMove(gamePosition, "d8 h4")).get
-    gamePosition.isCheck should equal (true)
-    gamePosition.moveList.length should be (0)
-    gamePosition.gameStatus should equal (GameStatus.Checkmate)
+    val gamePosition1 = GamePosition()
+    val gamePosition2 = GamePosition(gamePosition1, getMove(gamePosition1, "f2 f3")).get
+    val gamePosition3 = GamePosition(gamePosition2, getMove(gamePosition2, "e7 e5")).get
+    val gamePosition4 = GamePosition(gamePosition3, getMove(gamePosition3, "g2 g4")).get
+    val gamePosition5 = GamePosition(gamePosition4, getMove(gamePosition4, "d8 h4")).get
+    gamePosition5.isCheck should equal (true)
+    gamePosition5.moveList.length should be (0)
+    gamePosition5.gameStatus should equal (GameStatus.Checkmate)
   }
 
   it should "stalemate when the side to move cannot move but is not in check" in {
     val squareToPieceMap = Map(aToI("g6") -> Piece(Queen, White), aToI("f7") -> Piece(King, White), aToI("h8") -> Piece(King, Black))
-    var gamePosition = GamePosition(squareToPieceMap, Black, CastlingRights.create(squareToPieceMap))
+    val gamePosition = GamePosition(squareToPieceMap, Black, CastlingRights.create(squareToPieceMap))
     gamePosition.isCheck should equal (false)
     gamePosition.moveList.length should be (0)
     gamePosition.gameStatus should equal (GameStatus.Stalemate)
