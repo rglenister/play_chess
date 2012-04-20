@@ -121,10 +121,10 @@ class KingDynamicMoveGenerator(position: Position, fromSquare: Int, piece: Piece
   private def generateCastlingMove(boardSide: BoardSide.Value): Option[Move] = {
     val castlingMetadata = CastlingMetadata.get(position.sideToMove)(boardSide)
     def nothingBetweenKingAndRook = castlingMetadata.squaresBetweenKingAndRook.find(!position.isEmpty(_)) == None
-    def notPassingThroughCheck = !SquareAttackFinder.isSquareAttacked(position, castlingMetadata.rookToSquare, position.opposingSide)
-    def notInCheck = !SquareAttackFinder.isSquareAttacked(position, castlingMetadata.kingFromSquare, position.opposingSide)
+    def passingThroughCheck = SquareAttackFinder.isSquareAttacked(position, castlingMetadata.rookToSquare, position.opposingSide)
+    def inCheck = SquareAttackFinder.isSquareAttacked(position, castlingMetadata.kingFromSquare, position.opposingSide)
     
-    if (nothingBetweenKingAndRook && notPassingThroughCheck && notInCheck) {
+    if (nothingBetweenKingAndRook && !passingThroughCheck && !inCheck) {
       Some(CastlingMove(castlingMetadata.kingFromSquare, castlingMetadata.kingToSquare, boardSide))
     } else None
   }

@@ -229,7 +229,7 @@ object GamePosition {
  * @param fullMoveNumber is the full move move number.
  * @param previousPositions contains all previous game positions.
  */
-class GamePosition(
+class GamePosition (
     val squareToPieceMap: Map[Int, Piece],
     val sideToMove: PieceColor.Value,
     val castlingRightsMap: Map[PieceColor.Value, CastlingRights],
@@ -237,7 +237,7 @@ class GamePosition(
     val fiftyMoveRuleCount: Int,
     val fullMoveNumber: Int,
     val previousPositions: List[Position]
-    ) extends Position {
+    ) extends Position with  Equals {
 
   /**
    * Gets the hash code of this game position.
