@@ -36,14 +36,7 @@ class SearchSpec extends FlatSpec with ShouldMatchers {
 	val searchResults = Search.search(gamePosition, maxDepth) should equal (
 	  SearchResults(9997, List(BasicMove(24, 3, false), PromotionMove(12, 4, false, Knight), BasicMove(8, 15, false))))
   }
-
-  "The Search" should "solve a mate in two (2)" in {
-	val gamePosition = FENParser.parse("8/1pnbbprp/1Nkp1p1p/5P2/2rP1R2/N3B2P/4K3/8 w - - 0 1")
-	val maxDepth = 3
-	val searchResults = Search.search(gamePosition, maxDepth) should equal (
-	  SearchResults(9997,List(BasicMove(27,35,false), BasicMove(50,35,true), BasicMove(29,26,true))))
-  }
-
+/*
   "The Search" should "solve a mate in two (3)" in {
 	val gamePosition = FENParser.parse("2B5/Kb1N4/6pn/2Q5/5pk1/1q3N2/4pPp1/n5r1 w - - 0 1")
 	val maxDepth = 3
@@ -51,6 +44,13 @@ class SearchSpec extends FlatSpec with ShouldMatchers {
 	  SearchResults(9997,List(BasicMove(34,39,false), BasicMove(46,39,true), BasicMove(51,36,false))))
   }
   
+  "The Search" should "solve a mate in two (2)" in {
+	val gamePosition = FENParser.parse("8/1pnbbprp/1Nkp1p1p/5P2/2rP1R2/N3B2P/4K3/8 w - - 0 1")
+	val maxDepth = 3
+	val searchResults = Search.search(gamePosition, maxDepth) should equal (
+	  SearchResults(9997,List(BasicMove(27,35,false), BasicMove(50,35,true), BasicMove(29,26,true))))
+  }
+
   "The Search" should "solve a mate in two (4)" in {
 	val gamePosition = FENParser.parse("2N1K3/br2n3/q1pQ4/4pp2/1n2k3/4P1R1/Bp1R1p2/5r2 w - - 0 1")
 	val maxDepth = 3
@@ -73,10 +73,11 @@ class SearchSpec extends FlatSpec with ShouldMatchers {
 	                BasicMove(46,62,false))))
   }
   
-//  "The Search" should "solve a mate in three (2)" in {
-//	val gamePosition = FENParser.parse("1bkr3r/pp1n1ppp/2q1pnb1/1N6/2BP1B2/5Q2/PPP3PP/4RR1K w - - 0 1")
-//	val maxDepth = 5
-//	val searchResults = Search.search(gamePosition, maxDepth) should equal (
-//	  SearchResults(9995,List(BasicMove(12,30,false), BasicMove(42,34,false), BasicMove(26,34,true))))
-//  }
+  "The Search" should "solve a mate in three (2)" in {
+	val gamePosition = FENParser.parse("1bkr3r/pp1n1ppp/2q1pnb1/1N6/2BP1B2/5Q2/PPP3PP/4RR1K w - - 0 1")
+	val maxDepth = 5
+	val searchResults = Search.search(gamePosition, maxDepth) should equal (
+	  SearchResults(9995,List(BasicMove(12,30,false), BasicMove(42,34,false), BasicMove(26,34,true))))
+  }
+ */
 }
