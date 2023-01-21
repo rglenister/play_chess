@@ -1,13 +1,12 @@
 package chess.format
 
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.mock.EasyMockSugar
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.junit.JUnitRunner
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.easymock.EasyMock
-import org.scalamock.annotation.mock
+//import org.scalamock.annotation.mock
 
 import chess.Board
 import chess.Board.{algebraicToSquareIndex => aToI}
@@ -23,11 +22,11 @@ import chess.GamePosition
 /**
  * Tests the AlgebraicMoveFormatter.
  */
-@RunWith(classOf[JUnitRunner]) 
-class AlgebraicMoveFormatterSpec extends FlatSpec with ShouldMatchers {
- 
+@RunWith(classOf[JUnitRunner])
+class AlgebraicMoveFormatterSpec extends AnyFlatSpec with Matchers {
+
   val moveFormatter = MoveFormatter(Algebraic)
-  
+
   "The AlgebraicMoveFormatter" should "correctly format a standard opening move by white" in {
     val game = new Game().makeMove(aToI("e2"), aToI("e4")).get
     moveFormatter.formatMoves(game) should equal (List("e4"))
@@ -73,42 +72,42 @@ class AlgebraicMoveFormatterSpec extends FlatSpec with ShouldMatchers {
     val game = new Game(position).makeMove(aToI("a8"), aToI("e8")).get
     moveFormatter.formatMoves(game) should equal (List("\u265Ce8+"))
   }
-  
+
   it should "correctly format a double checking move" in {
     val squareToPieceMap = Map(aToI("b7") -> Piece(Rook, White), aToI("c6") -> Piece(Bishop, White), 10 -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("b7"), aToI("b8")).get
     moveFormatter.formatMoves(game) should equal (List("\u2656b8++"))
   }
-  
+
   it should "correctly format a mating move" in {
     val squareToPieceMap = Map(aToI("h1") -> Piece(Rook, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("h1"), aToI("h8")).get
     moveFormatter.formatMoves(game) should equal (List("\u2656h8#"))
   }
-  
+
   it should "correctly format a move where two pieces of the same type and on the same row can both move to the destination square" in {
     val squareToPieceMap = Map(aToI("a1") -> Piece(Rook, White), aToI("c1") -> Piece(Rook, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("a1"), aToI("b1")).get
     moveFormatter.formatMoves(game) should equal (List("\u2656ab1"))
   }
-  
+
   it should "correctly format a move where two pieces of the same type and on the same column can both move to the destination square" in {
     val squareToPieceMap = Map(aToI("a1") -> Piece(Rook, White), aToI("a3") -> Piece(Rook, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("a3"), aToI("a2")).get
     moveFormatter.formatMoves(game) should equal (List("\u26563a2"))
   }
-  
+
   it should "correctly format a move where two pieces of different types and on the same column can both move to the destination square" in {
     val squareToPieceMap = Map(aToI("a1") -> Piece(Rook, White), aToI("a3") -> Piece(Queen, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("a3"), aToI("a2")).get
     moveFormatter.formatMoves(game) should equal (List("\u2655a2"))
   }
-  
+
   it should "correctly format a move where pieces of the same type are located on the same row and column as the moved piece can each move to the same destination square" in {
     val squareToPieceMap = Map(aToI("a1") -> Piece(Queen, White), aToI("a2") -> Piece(Queen, White), aToI("c1") -> Piece(Queen, White),
         aToI("c2") -> Piece(Queen, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
@@ -116,17 +115,17 @@ class AlgebraicMoveFormatterSpec extends FlatSpec with ShouldMatchers {
     val game = new Game(position).makeMove(aToI("c2"), aToI("b1")).get
     moveFormatter.formatMoves(game) should equal (List("\u2655c2b1"))
   }
-  
+
 }
 
 /**
  * Tests the LongAlgebraicMoveFormatter.
  */
-@RunWith(classOf[JUnitRunner]) 
-class LongAlgebraicMoveFormatterSpec extends FlatSpec with ShouldMatchers {
- 
+@RunWith(classOf[JUnitRunner])
+class LongAlgebraicMoveFormatterSpec extends AnyFlatSpec with Matchers {
+
   val moveFormatter = MoveFormatter(LongAlgebraic)
-  
+
   "The AlgebraicMoveFormatter" should "correctly format a standard opening move by white" in {
     val game = new Game().makeMove(aToI("e2"), aToI("e4")).get
     moveFormatter.formatMoves(game) should equal (List("e2-e4"))
@@ -172,42 +171,42 @@ class LongAlgebraicMoveFormatterSpec extends FlatSpec with ShouldMatchers {
     val game = new Game(position).makeMove(aToI("a8"), aToI("e8")).get
     moveFormatter.formatMoves(game) should equal (List("\u265Ca8-e8+"))
   }
-  
+
   it should "correctly format a double checking move" in {
     val squareToPieceMap = Map(aToI("b7") -> Piece(Rook, White), aToI("c6") -> Piece(Bishop, White), 10 -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("b7"), aToI("b8")).get
     moveFormatter.formatMoves(game) should equal (List("\u2656b7-b8++"))
   }
-  
+
   it should "correctly format a mating move" in {
     val squareToPieceMap = Map(aToI("h1") -> Piece(Rook, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("h1"), aToI("h8")).get
     moveFormatter.formatMoves(game) should equal (List("\u2656h1-h8#"))
   }
-  
+
   it should "correctly format a move where two pieces of the same type and on the same row can both move to the destination square" in {
     val squareToPieceMap = Map(aToI("a1") -> Piece(Rook, White), aToI("c1") -> Piece(Rook, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("a1"), aToI("b1")).get
     moveFormatter.formatMoves(game) should equal (List("\u2656a1-b1"))
   }
-  
+
   it should "correctly format a move where two pieces of the same type and on the same column can both move to the destination square" in {
     val squareToPieceMap = Map(aToI("a1") -> Piece(Rook, White), aToI("a3") -> Piece(Rook, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("a3"), aToI("a2")).get
     moveFormatter.formatMoves(game) should equal (List("\u2656a3-a2"))
   }
-  
+
   it should "correctly format a move where two pieces of different types and on the same column can both move to the destination square" in {
     val squareToPieceMap = Map(aToI("a1") -> Piece(Rook, White), aToI("a3") -> Piece(Queen, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
     val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
     val game = new Game(position).makeMove(aToI("a3"), aToI("a2")).get
     moveFormatter.formatMoves(game) should equal (List("\u2655a3-a2"))
   }
-  
+
   it should "correctly format a move where pieces of the same type are located on the same row and column as the moved piece can each move to the same destination square" in {
     val squareToPieceMap = Map(aToI("a1") -> Piece(Queen, White), aToI("a2") -> Piece(Queen, White), aToI("c1") -> Piece(Queen, White),
         aToI("c2") -> Piece(Queen, White), aToI("a6") -> Piece(King, White), aToI("a8") -> Piece(King, Black))
@@ -215,5 +214,5 @@ class LongAlgebraicMoveFormatterSpec extends FlatSpec with ShouldMatchers {
     val game = new Game(position).makeMove(aToI("c2"), aToI("b1")).get
     moveFormatter.formatMoves(game) should equal (List("\u2655c2-b1"))
   }
-  
+
 }

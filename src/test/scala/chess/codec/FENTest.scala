@@ -1,29 +1,25 @@
 package chess.codec
 
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import chess.Board.{algebraicToSquareIndex => aToI}
 import chess.BoardSide._
-import chess.CastlingRights
-import chess.GamePosition
-import chess.Game
-import chess.Piece
-import chess.PieceType._
+import chess._
 import chess.PieceColor._
-import chess.Board
+import chess.PieceType._
+import org.junit.runner.RunWith
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.junit.JUnitRunner
 
 
-@RunWith(classOf[JUnitRunner]) 
-class FENSerializerSpec extends FlatSpec with ShouldMatchers {
- 
+@RunWith(classOf[JUnitRunner])
+class FENSerializerSpec extends AnyFlatSpec with Matchers {
+
   "The FEN Encoder" should "correctly encode the start position" in {
 	val fenEncoder = FENSerializer(GamePosition())
 	fenEncoder.encode should equal ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
   }
-  
+
   it should "correctly encode the position after move 1. e4" in {
     val game1 = new Game().makeMove(aToI("e2"), aToI("e4")).get
 	val fenEncoder = FENSerializer(game1.currentPosition)
@@ -44,27 +40,27 @@ class FENSerializerSpec extends FlatSpec with ShouldMatchers {
 	val fenEncoder = FENSerializer(game3.currentPosition)
 	fenEncoder.encode should equal ("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2")
   }
-  
+
   it should "correctly encode the empty position" in {
   	val position = GamePosition(Map(), White, CastlingRights.create(Map[Int, Piece]()))
 	val fenEncoder = FENSerializer(position)
 	fenEncoder.encode should equal ("8/8/8/8/8/8/8/8 w - - 0 1")
   }
-  
+
   it should "correctly encode the castling rights when white can only castle kingside and black can only castle queenside" in {
     val squareToPieceMap: Map[Int, Piece] = Map(4 -> Piece(King, White), 7 -> Piece(Rook, White),
                                                 60 -> Piece(King, Black), 56 -> Piece(Rook, Black))
   	val position = GamePosition(squareToPieceMap, White, CastlingRights.create(squareToPieceMap))
 	FENSerializer(position).encode should equal ("r3k3/8/8/8/8/8/8/4K2R w Kq - 0 1")
   }
-  
-  
-  
+
+
+
 }
 
 
-@RunWith(classOf[JUnitRunner]) 
-class FENParserSpec extends FlatSpec with ShouldMatchers {
+@RunWith(classOf[JUnitRunner])
+class FENParserSpec extends AnyFlatSpec with Matchers {
   "The FEN Parser" should "initialize correctly from a FEN" in {
     val gamePosition = FENParser.parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     gamePosition.squareToPieceMap should equal (Board.startingPosition)

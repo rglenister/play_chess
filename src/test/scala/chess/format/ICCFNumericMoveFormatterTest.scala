@@ -1,13 +1,14 @@
 package chess.format
 
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.mock.EasyMockSugar
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.junit.JUnitRunner
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import org.easymock.EasyMock
-import org.scalamock.annotation.mock
+
+//import org.easymock.EasyMockSugar
+//import org.easymock.EasyMock
+//import org.scalamock.annotation.mock
 
 import chess.Board
 import chess.Board.{algebraicToSquareIndex => aToI}
@@ -23,11 +24,11 @@ import chess.GamePosition
 /**
  * Tests the ICCFNumericMoveFormatter.
  */
-@RunWith(classOf[JUnitRunner]) 
-class ICCFNumericMoveFormatterSpec extends FlatSpec with ShouldMatchers {
- 
+@RunWith(classOf[JUnitRunner])
+class ICCFNumericMoveFormatterSpec extends AnyFlatSpec with Matchers {
+
   val moveFormatter = MoveFormatter(ICCFNumeric)
-  
+
   "The ICCFNumericMoveFormatter"  should "correctly format a standard opening move by white" in {
     val game = new Game().makeMove(aToI("e2"), aToI("e4")).get
     moveFormatter.formatMoves(game) should equal (List("5254"))

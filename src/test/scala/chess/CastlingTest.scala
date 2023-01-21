@@ -1,21 +1,21 @@
 package chess
 
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.junit.JUnitRunner
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner 
 
 import chess.PieceType._
 import chess.PieceColor._
 import chess.BoardSide._
- 
+
 
 /**
  * Tests the CastlingMetadata
  */
-@RunWith(classOf[JUnitRunner]) 
-class CastlingMetadataSpec extends FlatSpec with ShouldMatchers {
+@RunWith(classOf[JUnitRunner])
+class CastlingMetadataSpec extends AnyFlatSpec with Matchers {
 
   "The CastlingMetadata" should "should be correct for white on the kingside" in {
     val castlingMetadata = CastlingMetadata.get(White)(Kingside)
@@ -25,7 +25,7 @@ class CastlingMetadataSpec extends FlatSpec with ShouldMatchers {
     castlingMetadata.rookToSquare should equal (5)
     castlingMetadata.squaresBetweenKingAndRook should equal (List(5, 6))
   }
-  
+
   it should "be correct for white on the queenside" in {
     val castlingMetadata = CastlingMetadata.get(White)(Queenside)
     castlingMetadata.kingFromSquare should equal (4)
@@ -34,7 +34,7 @@ class CastlingMetadataSpec extends FlatSpec with ShouldMatchers {
     castlingMetadata.rookToSquare should equal (3)
     castlingMetadata.squaresBetweenKingAndRook should equal (List(3, 2, 1))
   }
-  
+
   it should "be correct for black on the kingside" in {
     val castlingMetadata = CastlingMetadata.get(Black)(Kingside)
     castlingMetadata.kingFromSquare should equal (60)
@@ -43,7 +43,7 @@ class CastlingMetadataSpec extends FlatSpec with ShouldMatchers {
     castlingMetadata.rookToSquare should equal (61)
     castlingMetadata.squaresBetweenKingAndRook should equal (List(61, 62))
   }
-  
+
   it should "be correct for black on the queenside" in {
     val castlingMetadata = CastlingMetadata.get(Black)(Queenside)
     castlingMetadata.kingFromSquare should equal (60)
@@ -58,8 +58,8 @@ class CastlingMetadataSpec extends FlatSpec with ShouldMatchers {
 /**
  * Tests the CastlingRights
  */
-@RunWith(classOf[JUnitRunner]) 
-class CastlingRightsSpec extends FlatSpec with ShouldMatchers {
+@RunWith(classOf[JUnitRunner])
+class CastlingRightsSpec extends AnyFlatSpec with Matchers {
 
   "The CastlingRights" should "be all false for an empty position" in {
     val squareToPieceMap: Map[Int, Piece] = Map()
@@ -85,7 +85,7 @@ class CastlingRightsSpec extends FlatSpec with ShouldMatchers {
     castlingRights2(Black).canCastle(Kingside) should equal (false)
     castlingRights2(Black).canCastle(Queenside) should equal (false)
   }
-  
+
   it should "be all true when all kings and rooks are on their home squares" in {
     val squareToPieceMap: Map[Int, Piece] = Map(4 -> Piece(King, White), 0 -> Piece(Rook, White), 7 -> Piece(Rook, White),
                                                 60 -> Piece(King, Black), 56 -> Piece(Rook, Black), 63 -> Piece(Rook, Black))
@@ -171,5 +171,4 @@ class CastlingRightsSpec extends FlatSpec with ShouldMatchers {
     castlingRights(Black).canCastle(Kingside) should equal (true)
     castlingRights(Black).canCastle(Queenside) should equal (true)
   }
-}  
-  
+}

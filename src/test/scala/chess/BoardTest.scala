@@ -1,16 +1,16 @@
 package chess
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.junit.JUnitRunner
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner 
 
 import chess.PieceType._
 import chess.PieceColor._
 
 
 @RunWith(classOf[JUnitRunner]) 
-class BoardSpec extends FlatSpec with ShouldMatchers {
+class BoardSpec extends AnyFlatSpec with Matchers {
  
   "The Board" should "convert algebraic notation to square index" in {
 	Board.algebraicToSquareIndex("a1") should equal (0)

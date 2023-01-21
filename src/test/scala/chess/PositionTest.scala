@@ -1,13 +1,13 @@
 package chess
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.mock.EasyMockSugar
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.junit.JUnitRunner
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner 
+
 import org.easymock.EasyMock
 
-import org.scalamock.annotation.mock
+import org.scalamock.scalatest.MockFactory
 
 import chess.PieceType._
 import chess.PieceColor._
@@ -16,14 +16,14 @@ import chess.BoardSide._
 import Board.{algebraicToSquareIndex => aToI}
 
 
-@RunWith(classOf[JUnitRunner]) 
-class PositionSpec extends FlatSpec with EasyMockSugar with ShouldMatchers {
- 
+@RunWith(classOf[JUnitRunner])
+class PositionSpec extends AnyFlatSpec with Matchers with MockFactory {
+
   "The Position" should "know the color of the side to move and the opposing side" in {
     val whiteToMove = new TestPosition(Map(), White)
     whiteToMove.sideToMove should equal (White)
     whiteToMove.opposingSide should equal (Black)
-    
+
     val blackToMove = new TestPosition(Map(), Black)
     blackToMove.sideToMove should equal (Black)
     blackToMove.opposingSide should equal (White)
@@ -62,8 +62,8 @@ class PositionSpec extends FlatSpec with EasyMockSugar with ShouldMatchers {
   it should "give the correct castling rights" in {
     val castlingRightsMap = Map(White -> mock[CastlingRights], Black -> mock[CastlingRights])
     for (color <- PieceColor.values; boardSide <- BoardSide.values) {
-      EasyMock.expect(castlingRightsMap(color).canCastle(boardSide).andReturn(false))
-      EasyMock.expect(castlingRightsMap(color).canCastle(boardSide).andReturn(true))
+      EasyMock.expect(castlingRightsMap(color).canCastle(boardSide)).andReturn(false)
+      EasyMock.expect(castlingRightsMap(color).canCastle(boardSide)).andReturn(true)
     }
     val position = new TestPosition(Map(), White, castlingRightsMap)
     EasyMock.replay(castlingRightsMap(White))
@@ -74,7 +74,7 @@ class PositionSpec extends FlatSpec with EasyMockSugar with ShouldMatchers {
       position.canCastle(color, boardSide) should equal (true)
     }
   }
-  
+
   it should "know the en passant square" in {
     val position1 = new TestPosition(Map(), White, Map(), Some(3))
     position1.enPassantSquare should be (Some(3))
@@ -95,9 +95,9 @@ class PositionSpec extends FlatSpec with EasyMockSugar with ShouldMatchers {
 }
 
 
-@RunWith(classOf[JUnitRunner]) 
-class GamePositionSpec extends FlatSpec with ShouldMatchers {
- 
+@RunWith(classOf[JUnitRunner])
+class GamePositionSpec extends AnyFlatSpec with Matchers {
+
   "The GamePosition" should "be ready for a new game" in {
     val gamePosition = GamePosition()
     gamePosition.squareToPieceMap should equal (Board.startingPosition)
@@ -134,7 +134,7 @@ class GamePositionSpec extends FlatSpec with ShouldMatchers {
 
   private def getMove(gamePosition: GamePosition, move: String): Move = {
     move.split("\\W") match {
-      case Array(from, to) => gamePosition.moveList.find(m => m.fromSquare==aToI(from) && m.toSquare==aToI(to)) get 
+      case Array(from, to) => gamePosition.moveList.find(m => m.fromSquare==aToI(from) && m.toSquare==aToI(to)) get
     }
   }
 }

@@ -1,49 +1,48 @@
 package chess
 
-
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.mock.EasyMockSugar
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.junit.JUnitRunner
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner 
+
 import org.easymock.EasyMock
 
-import org.scalamock.annotation.mock
+import org.scalamock.scalatest.MockFactory
 
 import chess.PieceType._
 import chess.PieceColor._
 import chess.BoardSide._
- 
+
 
 /**
  * Tests the DynamicMoveGenerator
  */
-@RunWith(classOf[JUnitRunner]) 
-class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMatchers {
+@RunWith(classOf[JUnitRunner])
+class DynamicMoveGeneratorSpec extends AnyFlatSpec with Matchers with MockFactory {
 
   "The DynamicMoveGenerator" should "generate two moves for a white pawn on rank two" in {
     val squareToPieceMap = Map(9 -> Piece(Pawn, White))
-    val mockPosition = createMockPosition(squareToPieceMap, White)    
+    val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(9, 17, false), BasicMove(9, 25, false)))
   }
-  
+
   "The DynamicMoveGenerator" should "generate two moves for a black pawn on rank two" in {
     val squareToPieceMap = Map(48 -> Piece(Pawn, Black))
     val mockPosition = createMockPosition(squareToPieceMap, Black)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(48, 40, false), BasicMove(48, 32, false)))
   }
-  
+
   it should "generate one move for a pawn on rank three" in {
     val squareToPieceMap = Map(17 -> Piece(Pawn, White))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(17, 25, false)))
   }
@@ -52,7 +51,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val whiteSquareToPieceMap = Map(17 -> Piece(Pawn, White), 25 -> Piece(Pawn, White))
     val mockPosition = createMockPosition(whiteSquareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(25, 33, false)))
   }
@@ -61,7 +60,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(17 -> Piece(Pawn, White), 24 -> Piece(Pawn, Black), 26 -> Piece(Pawn, Black))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(17, 25, false), BasicMove(17, 24, true), BasicMove(17, 26, true)))
   }
@@ -70,7 +69,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(16 -> Piece(Pawn, White), 23 -> Piece(Pawn, Black), 25 -> Piece(Pawn, Black))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(16, 24, false), BasicMove(16, 25, true)))
   }
@@ -79,7 +78,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(17 -> Piece(Pawn, White), 24 -> Piece(Pawn, White), 26 -> Piece(Pawn, White))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(17, 25, false), BasicMove(24, 32, false), BasicMove(26, 34, false)))
   }
@@ -88,7 +87,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(48 -> Piece(Pawn, White))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(PromotionMove(48, 56, false, Knight), PromotionMove(48, 56, false, Bishop), PromotionMove(48, 56, false, Rook), PromotionMove(48, 56, false, Queen)))
   }
@@ -97,7 +96,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(8 -> Piece(Pawn, Black))
     val mockPosition = createMockPosition(squareToPieceMap, Black)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(PromotionMove(8, 0, false, Knight), PromotionMove(8, 0, false, Bishop), PromotionMove(8, 0, false, Rook), PromotionMove(8, 0, false, Queen)))
   }
@@ -106,7 +105,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(50 -> Piece(Pawn, White), 57 -> Piece(Bishop, Black), 59 -> Piece(Bishop, Black))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(
         PromotionMove(50, 58, false, Knight), PromotionMove(50, 58, false, Bishop), PromotionMove(50, 58, false, Rook), PromotionMove(50, 58, false, Queen),
@@ -118,7 +117,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(9 -> Piece(Pawn, Black), 0 -> Piece(Bishop, White), 2 -> Piece(Bishop, White))
     val mockPosition = createMockPosition(squareToPieceMap, Black)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(
         PromotionMove(9, 1, false, Knight), PromotionMove(9, 1, false, Bishop), PromotionMove(9, 1, false, Rook), PromotionMove(9, 1, false, Queen),
@@ -130,7 +129,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(33 -> Piece(Pawn, White), 34 -> Piece(Pawn, Black))
     val mockPosition = createMockPosition(squareToPieceMap, White, Some(34))
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(33, 41, false), EnPassantMove(33, 42, 34)))
   }
@@ -139,7 +138,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(24 -> Piece(Pawn, White), 25 -> Piece(Pawn, Black))
     val mockPosition = createMockPosition(squareToPieceMap, Black, Some(24))
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(25, 17, false), EnPassantMove(25, 16, 24)))
   }
@@ -148,7 +147,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(0 -> Piece(Knight, White), 10 -> Piece(Pawn, Black), 17 -> Piece(Pawn, White))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(0, 10, true), BasicMove(17,25, false)))
   }
@@ -157,7 +156,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(9 -> Piece(Bishop, White), 0 -> Piece(Bishop, Black), 18 -> Piece(Pawn, White))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(9,16, false), BasicMove(9, 0, true), BasicMove(9, 2, false), BasicMove(18, 26, false)))
   }
@@ -166,7 +165,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     val squareToPieceMap = Map(0 -> Piece(Rook, White), 8 -> Piece(Bishop, Black), 1 -> Piece(Knight, White))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition)
     result should equal (List(BasicMove(0, 8, true), BasicMove(1, 11, false), BasicMove(1, 18, false), BasicMove(1, 16, false)))
   }
@@ -177,7 +176,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.expect(mockPosition.canCastle(White, Kingside)).andReturn(false)
     EasyMock.expect(mockPosition.canCastle(White, Queenside)).andReturn(false)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
     result should equal (List())
   }
@@ -188,7 +187,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.expect(mockPosition.canCastle(Black, Kingside)).andReturn(false)
     EasyMock.expect(mockPosition.canCastle(Black, Queenside)).andReturn(false)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
     result should equal (List())
   }
@@ -199,7 +198,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.expect(mockPosition.canCastle(White, Kingside)).andReturn(true)
     EasyMock.expect(mockPosition.canCastle(White, Queenside)).andReturn(true)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
     result should equal (List(CastlingMove(4,6,Kingside), CastlingMove(4,2,Queenside)))
   }
@@ -210,7 +209,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.expect(mockPosition.canCastle(Black, Kingside)).andReturn(true)
     EasyMock.expect(mockPosition.canCastle(Black, Queenside)).andReturn(true)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
     result should equal (List(CastlingMove(60,62,Kingside), CastlingMove(60,58,Queenside)))
   }
@@ -221,7 +220,7 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.expect(mockPosition.canCastle(White, Kingside)).andReturn(true)
     EasyMock.expect(mockPosition.canCastle(White, Queenside)).andReturn(true)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
     result should equal (List())
   }
@@ -232,18 +231,18 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.expect(mockPosition.canCastle(Black, Kingside)).andReturn(true)
     EasyMock.expect(mockPosition.canCastle(Black, Queenside)).andReturn(true)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
     result should equal (List())
   }
-  
+
   it should "not generate castling moves for white if the king is in check" in {
     val squareToPieceMap = Map(4 -> Piece(King, White), 13 -> Piece(Bishop, Black))
     val mockPosition = createMockPosition(squareToPieceMap, White)
     EasyMock.expect(mockPosition.canCastle(White, Kingside)).andReturn(true)
     EasyMock.expect(mockPosition.canCastle(White, Queenside)).andReturn(true)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
     result should equal (List())
   }
@@ -254,11 +253,11 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.expect(mockPosition.canCastle(Black, Kingside)).andReturn(true)
     EasyMock.expect(mockPosition.canCastle(Black, Queenside)).andReturn(true)
     EasyMock.replay(mockPosition)
-    
+
     val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
     result should equal (List())
   }
-  
+
   it should "not generate a kingside castling move for white unless all squares between king and rook are empty" in {
     for (square <- 5 to 6) {
       val squareToPieceMap = Map(4 -> Piece(King, White), square -> Piece(Knight, White))
@@ -266,9 +265,9 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
 	  EasyMock.expect(mockPosition.canCastle(White, Kingside)).andReturn(true)
 	  EasyMock.expect(mockPosition.canCastle(White, Queenside)).andReturn(false)
 	  EasyMock.replay(mockPosition)
-	    
+
 	  val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
-	  result should equal (List())  
+	  result should equal (List())
     }
   }
 
@@ -279,9 +278,9 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
 	  EasyMock.expect(mockPosition.canCastle(White, Kingside)).andReturn(false)
 	  EasyMock.expect(mockPosition.canCastle(White, Queenside)).andReturn(true)
 	  EasyMock.replay(mockPosition)
-	    
+
 	  val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
-	  result should equal (List())  
+	  result should equal (List())
     }
   }
 
@@ -292,9 +291,9 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
 	  EasyMock.expect(mockPosition.canCastle(White, Kingside)).andReturn(true)
 	  EasyMock.expect(mockPosition.canCastle(White, Queenside)).andReturn(false)
 	  EasyMock.replay(mockPosition)
-	    
+
 	  val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
-	  result should equal (List())  
+	  result should equal (List())
     }
   }
 
@@ -305,14 +304,14 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
 	  EasyMock.expect(mockPosition.canCastle(White, Kingside)).andReturn(false)
 	  EasyMock.expect(mockPosition.canCastle(White, Queenside)).andReturn(true)
 	  EasyMock.replay(mockPosition)
-	    
+
 	  val result = DynamicMoveGenerator.getMoveList(mockPosition) filter { move => move.isInstanceOf[CastlingMove] }
-	  result should equal (List())  
+	  result should equal (List())
     }
   }
- 
+
   val emptySquareToPieceMap = Map[Int, Piece]()
-  
+
   def createMockPosition(squareToPieceMap: Map[Int, Piece], sideToMove: PieceColor.Value, enpassantSquare: Option[Int] = None) = {
     val mockPosition = mock[Position]
     EasyMock.expect(mockPosition.sideToMove).andReturn(sideToMove).anyTimes
@@ -323,6 +322,6 @@ class DynamicMoveGeneratorSpec extends FlatSpec with EasyMockSugar with ShouldMa
     EasyMock.expect(mockPosition enPassantSquare).andReturn(enpassantSquare).anyTimes
     for (square <- 0 until Board.NumSquares)
       EasyMock.expect(mockPosition.isEmpty(square)).andReturn(!squareToPieceMap.contains(square)).anyTimes
-    mockPosition    
+    mockPosition
   }
 }
