@@ -113,7 +113,7 @@ class SquareAttackFinderSpec extends AnyFlatSpec with Matchers with MockFactory 
     result should equal (List(18, 16))
   }
 
-  def createMockPosition(squareToPieceMap: Map[Int, Piece]) = {
+  def createMockPosition(squareToPieceMap: Map[Int, Piece]): Position = {
     val mockPosition = mock[Position]
     EasyMock.expect(mockPosition squareToPieceMap).andReturn(squareToPieceMap).anyTimes
     for (square <- 0 until Board.NumSquares)

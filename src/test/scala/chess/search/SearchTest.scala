@@ -37,7 +37,7 @@ class SearchSpec extends AnyFlatSpec with Matchers {
 	val searchResults = Search.search(gamePosition, maxDepth) should equal (
 	  SearchResults(9997, List(BasicMove(24, 3, false), PromotionMove(12, 4, false, Knight), BasicMove(8, 15, false))))
   }
-/*
+
   "The Search" should "solve a mate in two (3)" in {
 	val gamePosition = FENParser.parse("2B5/Kb1N4/6pn/2Q5/5pk1/1q3N2/4pPp1/n5r1 w - - 0 1")
 	val maxDepth = 3
@@ -80,5 +80,13 @@ class SearchSpec extends AnyFlatSpec with Matchers {
 	val searchResults = Search.search(gamePosition, maxDepth) should equal (
 	  SearchResults(9995,List(BasicMove(12,30,false), BasicMove(42,34,false), BasicMove(26,34,true))))
   }
- */
+
+	// Pal Benkö and the Fischer challenge - see https://en.chessbase.com/post/pal-benkoe-and-the-fischer-challenge
+	"The Search" should "solve a mate in three (3)" in {
+		val gamePosition = FENParser.parse("8/8/8/8/4k3/8/8/2BQKB2 w - - 0 1")
+		val maxDepth = 5
+		val searchResults = Search.search(gamePosition, maxDepth) should equal(
+			SearchResults(9995, List(BasicMove(5, 26, false), BasicMove(28, 37, false), BasicMove(3, 21, false), BasicMove(37, 46, false), BasicMove(21, 53, false))))
+	}
+
 }
