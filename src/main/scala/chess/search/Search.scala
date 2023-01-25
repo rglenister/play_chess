@@ -50,7 +50,8 @@ object Search {
   def search(position: Position, maxDepth: Int): SearchResults = {
     nodeCountTimer = new NodeCountTimer
     val searchResults = -doSearch(position, List(), 0, maxDepth)
-    logger.info("score: %d, formattedMoves: %s, nodeCountTimer: %s".format(searchResults.score, MoveFormatter(LongAlgebraic).formatMoves(Game(position, searchResults.bestLine)), nodeCountTimer))
+    System.out.println("score: %d, formattedMoves: %s, nodeCountTimer: %s".format(searchResults.score, MoveFormatter(LongAlgebraic).formatMoves(Game(position, searchResults.bestLine)), nodeCountTimer))
+    System.out.flush
     searchResults
   }
   

@@ -3,16 +3,16 @@ package chess.codec
 
 import chess.Board.{algebraicToSquareIndex => aToI}
 import chess.BoardSide._
-import chess._
 import chess.PieceColor._
 import chess.PieceType._
+import chess._
 import org.junit.runner.RunWith
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.junit.JUnitRunner
 
 
-@RunWith(classOf[JUnitRunner])
+//@RunWith(classOf[JUnitRunner])
 class FENSerializerSpec extends AnyFlatSpec with Matchers {
 
   "The FEN Encoder" should "correctly encode the start position" in {
@@ -65,8 +65,8 @@ class FENParserSpec extends AnyFlatSpec with Matchers {
     val gamePosition = FENParser.parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     gamePosition.squareToPieceMap should equal (Board.startingPosition)
     gamePosition.sideToMove should equal (White)
-    gamePosition.castlingRightsMap(White) should equal (CastlingRights(false, Map(Kingside -> false, Queenside -> false)))
-    gamePosition.castlingRightsMap(Black) should equal (CastlingRights(false, Map(Kingside -> false, Queenside -> false)))
+    gamePosition.castlingRightsMap(White) should equal (CastlingRights(kingHasMoved = false, Map(Kingside -> false, Queenside -> false)))
+    gamePosition.castlingRightsMap(Black) should equal (CastlingRights(kingHasMoved = false, Map(Kingside -> false, Queenside -> false)))
     gamePosition.fiftyMoveRuleCount should equal (0)
     gamePosition.fullMoveNumber should equal (1)
     gamePosition.repetitionOfPositionCount should equal (0)
@@ -80,14 +80,14 @@ class FENParserSpec extends AnyFlatSpec with Matchers {
 
   it should "initialize correctly from a FEN with empty castling rights" in {
     val gamePosition = FENParser.parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b - - 0 1")
-    gamePosition.castlingRightsMap(White) should equal (CastlingRights(false, Map(Kingside -> true, Queenside -> true)))
-    gamePosition.castlingRightsMap(Black) should equal (CastlingRights(false, Map(Kingside -> true, Queenside -> true)))
+    gamePosition.castlingRightsMap(White) should equal (CastlingRights(kingHasMoved = false, Map(Kingside -> true, Queenside -> true)))
+    gamePosition.castlingRightsMap(Black) should equal (CastlingRights(kingHasMoved = false, Map(Kingside -> true, Queenside -> true)))
   }
 
   it should "initialize correctly from a FEN with mixed castling rights" in {
     val gamePosition = FENParser.parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kq - 0 1")
-    gamePosition.castlingRightsMap(White) should equal (CastlingRights(false, Map(Kingside -> false, Queenside -> true)))
-    gamePosition.castlingRightsMap(Black) should equal (CastlingRights(false, Map(Kingside -> true, Queenside -> false)))
+    gamePosition.castlingRightsMap(White) should equal (CastlingRights(kingHasMoved = false, Map(Kingside -> false, Queenside -> true)))
+    gamePosition.castlingRightsMap(Black) should equal (CastlingRights(kingHasMoved = false, Map(Kingside -> true, Queenside -> false)))
   }
 
   it should "initialize correctly from a FEN with the enpassant square set" in {

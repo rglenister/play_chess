@@ -1,12 +1,9 @@
 package chess
 
+import org.junit.runner.RunWith
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.junit.JUnitRunner
-import org.junit.runner.RunWith
-
-import chess.PieceType._
-import chess.PieceColor._
 
 
 @RunWith(classOf[JUnitRunner]) 

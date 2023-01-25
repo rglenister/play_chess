@@ -1,23 +1,16 @@
 package chess.format
 
 
+import org.junit.runner.RunWith
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.junit.JUnitRunner
-import org.junit.runner.RunWith
-import org.easymock.EasyMock
-//import org.scalamock.annotation.mock
 
-import chess.Board
 import chess.Board.{algebraicToSquareIndex => aToI}
-import chess.CastlingRights
-import chess.Game
-import chess.GamePosition
-import MoveNotation._
-import chess.Piece
-import chess.PieceType._
+import chess.{CastlingRights, Game, GamePosition, Piece}
 import chess.PieceColor._
-import chess.GamePosition
+import chess.PieceType._
+import chess.format.MoveNotation._
 
 /**
  * Tests the AlgebraicMoveFormatter.
@@ -25,7 +18,7 @@ import chess.GamePosition
 @RunWith(classOf[JUnitRunner])
 class AlgebraicMoveFormatterSpec extends AnyFlatSpec with Matchers {
 
-  val moveFormatter = MoveFormatter(Algebraic)
+   val moveFormatter: MoveFormatter = MoveFormatter(Algebraic)
 
   "The AlgebraicMoveFormatter" should "correctly format a standard opening move by white" in {
     val game = new Game().makeMove(aToI("e2"), aToI("e4")).get
@@ -124,7 +117,7 @@ class AlgebraicMoveFormatterSpec extends AnyFlatSpec with Matchers {
 @RunWith(classOf[JUnitRunner])
 class LongAlgebraicMoveFormatterSpec extends AnyFlatSpec with Matchers {
 
-  val moveFormatter = MoveFormatter(LongAlgebraic)
+  val moveFormatter: MoveFormatter = MoveFormatter(LongAlgebraic)
 
   "The AlgebraicMoveFormatter" should "correctly format a standard opening move by white" in {
     val game = new Game().makeMove(aToI("e2"), aToI("e4")).get
