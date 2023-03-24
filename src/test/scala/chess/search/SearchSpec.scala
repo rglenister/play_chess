@@ -2,7 +2,7 @@ package chess.search
 
 
 import chess.PieceType._
-import chess.{BasicMove, PromotionMove}
+import chess.{BasicMove, EnPassantMove, PromotionMove}
 import chess.codec.FENParser
 import org.junit.runner.RunWith
 import org.scalatest.flatspec.AnyFlatSpec
@@ -13,7 +13,7 @@ import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class SearchSpec extends AnyFlatSpec with Matchers {
-/*
+
   "The Search" should "solve a mate in one" in {
 	val gamePosition = FENParser.parse("2n5/8/6R1/1k1KQb2/2N1N3/8/R2B4/r1n2B2 w - - 0 1")
 	val maxDepth = 1
@@ -54,7 +54,14 @@ class SearchSpec extends AnyFlatSpec with Matchers {
 		Search.search(gamePosition, maxDepth) should equal (
 			SearchResults(9997,List(BasicMove(12,30,isCapture = false), BasicMove(42,34,isCapture = false), BasicMove(26,34,isCapture = true))))
   }
-*/
+
+	"The Search" should "solve a mate in two (6)" in {
+		val gamePosition = FENParser.parse("R7/p7/k1P5/PpKP4/8/8/8/8 w - b6 0 1")
+		val maxDepth = 3
+		Search.search(gamePosition, maxDepth) should equal(
+			SearchResults(9997, List(EnPassantMove(32, 41, 33), BasicMove(40, 32, false), BasicMove(56, 48, true))))
+	}
+
 	"The Search" should "solve a mate in two (peter 1)" in {
 		val gamePosition = FENParser.parse("8/1N2N3/2r5/3qp2R/QP2kp1K/5R2/6B1/6B1 w - - 0 1")
 		val maxDepth = 3
