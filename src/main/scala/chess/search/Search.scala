@@ -69,10 +69,10 @@ object Search {
   
   private def scorePosition(position: Position, depth: Int): Int = {
     if (position.gameStatus == Checkmate) {
-      MaxScore - depth
+      depth - MaxScore
     } else {
       0
-    } * (if (position.sideToMove == White) 1 else -1)
+    }
   }
 }
 
