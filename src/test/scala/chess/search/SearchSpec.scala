@@ -20,12 +20,25 @@ class SearchSpec extends AnyFlatSpec with Matchers {
 		Search.search(gamePosition, maxDepth) should equal (SearchResults(9999, List(BasicMove(35, 27, isCapture = false))))
   }
 
-  "The Search" should "solve a mate in two (1)" in {
+	"The Search" should "solve a mate in one for black" in {
+		val gamePosition = FENParser.parse("7K/8/7k/8/8/8/8/r7 b - - 0 1")
+		val maxDepth = 1
+		Search.search(gamePosition, maxDepth) should equal(SearchResults(9999, List(BasicMove(0, 56, false))))
+	}
+
+	"The Search" should "solve a mate in two (1)" in {
 	val gamePosition = FENParser.parse("8/8/5KPk/8/B5P1/8/R3p3/8 w - - 0 1")
 	val maxDepth = 3
 		Search.search(gamePosition, maxDepth) should equal (
 			SearchResults(9997, List(BasicMove(24, 3, isCapture = false), PromotionMove(12, 4, isCapture = false, Knight), BasicMove(8, 15, isCapture = false))))
   }
+
+	"The Search" should "solve a mate in two for black (1)" in {
+		val gamePosition = FENParser.parse("6k1/pp4p1/2p5/2bp4/8/P5Pb/1P3rrP/2BRRN1K b - - 0 1")
+		val maxDepth = 3
+		Search.search(gamePosition, maxDepth) should equal(
+			SearchResults(9997, List(BasicMove(14, 6, false), BasicMove(7, 6, true), BasicMove(13, 5, true))))
+	}
 
 	"The Search" should "solve a mate in two (2)" in {
 		val gamePosition = FENParser.parse("8/1pnbbprp/1Nkp1p1p/5P2/2rP1R2/N3B2P/4K3/8 w - - 0 1")
